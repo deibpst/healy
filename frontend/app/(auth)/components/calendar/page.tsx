@@ -44,7 +44,7 @@ export default function Calendar() {
 		'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 	];
 
-	const dayNames: string[] = ['MON', 'TUE', 'WED', 'THE', 'FRI', 'SAT', 'SUN'];
+	const dayNames: string[] = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
 	const previousMonth = (): void => {
 		setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
