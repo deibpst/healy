@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { validateLogin } from '@/lib/validations/validateLogin';
+import Link from 'next/link';
+
 
 export default function LoginForm() {
   const [email, setEmail] = useState<string>('');
@@ -46,6 +48,15 @@ export default function LoginForm() {
       <button type="submit" className="btn-primary w-full">
         Iniciar sesión
       </button>
+
+      <p className="text-sm text-center text-gray-600 mt-4">
+        ¿No tienes cuenta?{' '}
+        <Link href="/register" className="text-blue-600 hover:underline">
+          Regístrate
+        </Link>
+      </p>
+
+      
     </form>
   );
 }
