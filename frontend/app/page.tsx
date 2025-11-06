@@ -42,7 +42,7 @@ export default function Home() {
 				<div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
 					<Link
 						className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white border border-gray-200 px-5 text-black transition-colors hover:bg-gray-100 md:w-[158px]"
-						href="/login"
+						href="/home"
 						rel="noopener noreferrer"
 					>
 						<Image
