@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation'; 
+import { usePathname, useRouter } from 'next/navigation'; // Importar useRouter
 import { Calendar, Home, List, Settings, LogOut } from 'lucide-react';
 
 interface SidebarProps {
@@ -12,8 +12,17 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 	
 	const pathname = usePathname();
-
+	const router = useRouter(); // Inicializar useRouter
+	
 	const isActive = (path: string) => pathname.startsWith(path);
+	
+	// Función para manejar el cierre de sesión
+	const handleLogout = () => {
+		// 1. Eliminar el token de autenticación (clave usada en LoginForm.tsx)
+		localStorage.removeItem('userToken');
+		// 2. Redirigir al usuario a la página de login, que es la raíz (/)
+		router.push('/login');
+	};
 	
 	return (
 		<div className={`${isOpen ? 'w-64' : 'w-0'} bg-white border-r border-gray-200 transition-all duration-300 overflow-hidden shrink-0`}>
@@ -56,9 +65,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 						</Link>
 
 						<Link 
-							href="/components/calendar" 
+							href="/calendar" 
 							className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
-								isActive('/components/calendar') 
+								isActive('/calendar') 
 								? 'bg-blue-500 text-white shadow-sm' 
 								: 'text-gray-600 hover:bg-gray-50'
 							}`}
@@ -71,16 +80,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 				</div>
 
 				<div className="space-y-1 mt-auto">
-					<button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+					<Link href="/settings" className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
 						<Settings size={20} />
-						<span className="text-sm">Configuración</span>
-					</button>
-					<button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+						<span className="text-sm">Settings</span>
+					</Link>
+					
+					{/* Botón de Cerrar Sesión: Llama a handleLogout */}
+					<button 
+						onClick={handleLogout} 
+						className="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+					>
 						<LogOut size={20} />
-						<span className="text-sm">Logout</span>
+						<span className="text-sm font-medium">Cerrar sesión</span>
 					</button>
 				</div>
-				
 			</div>
 		</div>
 	);
