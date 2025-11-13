@@ -140,7 +140,7 @@ class GoogleCalendarService {
     if (this.isInitialized) return;
 
     try {
-      console.log('🧩 GOOGLE_CONFIG en init():', GOOGLE_CONFIG);
+      console.log('GOOGLE_CONFIG en init():', GOOGLE_CONFIG);
 
       // 1) Cargar gapi.js
       await new Promise<void>((resolve, reject) => {
@@ -148,7 +148,7 @@ class GoogleCalendarService {
         script.src = 'https://apis.google.com/js/api.js';
         script.async = true;
         script.onload = () => {
-          console.log('✅ Script gapi.js cargado');
+          console.log('Script gapi.js cargado');
           resolve();
         };
         script.onerror = () => {
@@ -164,7 +164,7 @@ class GoogleCalendarService {
         script.async = true;
         script.defer = true;
         script.onload = () => {
-          console.log('✅ Script Google Identity Services cargado');
+          console.log('Script Google Identity Services cargado');
           resolve();
         };
         script.onerror = () => {
@@ -177,22 +177,22 @@ class GoogleCalendarService {
 this.gapi = win.gapi;
 this.googleIdentity = win.google;
 
-      console.log('🧠 this.gapi después de load:', this.gapi);
+      console.log(' this.gapi después de load:', this.gapi);
 
       // 3) Inicializar gapi.client (solo API, sin auth)
       await new Promise<void>((resolve) => {
         this.gapi!.load('client', () => {
-          console.log('✅ gapi.load("client") completado');
+          console.log('gapi.load("client") completado');
           resolve();
         });
       });
 
-      console.log('⏳ Llamando a gapi.client.init...');
+      console.log('Llamando a gapi.client.init...');
       await this.gapi!.client.init({
         apiKey: GOOGLE_CONFIG.apiKey,
         discoveryDocs: GOOGLE_CONFIG.discoveryDocs,
       });
-      console.log('✅ gapi.client.init OK');
+      console.log('gapi.client.init OK');
 
       // 4) Crear el tokenClient de GIS para obtener access tokens
       this.tokenClient = this.googleIdentity!.accounts.oauth2.initTokenClient({
@@ -200,12 +200,12 @@ this.googleIdentity = win.google;
         scope: GOOGLE_CONFIG.scopes,
         callback: (tokenResponse: GISTokenResponse) => {
           if (tokenResponse.error) {
-            console.error('❌ Error en tokenClient callback:', tokenResponse.error);
+            console.error('Error en tokenClient callback:', tokenResponse.error);
             return;
           }
 
           if (tokenResponse.access_token) {
-            console.log('🔐 Access token recibido');
+            console.log('Access token recibido');
             this.accessToken = tokenResponse.access_token;
             this.gapi!.client.setToken({ access_token: tokenResponse.access_token });
           }
@@ -214,7 +214,7 @@ this.googleIdentity = win.google;
 
       this.isInitialized = true;
     } catch (err: unknown) {
-      console.error('❌ Error en GoogleCalendarService.init():', err);
+      console.error(' Error en GoogleCalendarService.init():', err);
       throw err;
     }
   }
@@ -233,13 +233,13 @@ this.googleIdentity = win.google;
       // redefinimos callback para esta petición concreta
       this.tokenClient!.callback = (tokenResponse: GISTokenResponse) => {
         if (tokenResponse.error) {
-          console.error('❌ Error en tokenClient (signIn):', tokenResponse.error);
+          console.error('Error en tokenClient (signIn):', tokenResponse.error);
           reject(new Error(tokenResponse.error));
           return;
         }
 
         if (tokenResponse.access_token) {
-          console.log('🔐 Access token recibido en signIn');
+          console.log('Access token recibido en signIn');
           this.accessToken = tokenResponse.access_token;
           this.gapi!.client.setToken({ access_token: tokenResponse.access_token });
         }
@@ -269,7 +269,7 @@ this.googleIdentity = win.google;
 
     await new Promise<void>((resolve) => {
       this.googleIdentity!.accounts.oauth2.revoke(tokenToRevoke, () => {
-        console.log('🔓 Token revocado');
+        console.log('Token revocado');
         resolve();
       });
     });
