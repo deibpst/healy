@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isSignedIn = false, onSignIn,
 						<div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
 							<span className="text-white font-bold text-sm">RS</span>
 						</div>
-						<span className="font-semibold text-gray-800">Fisioterapia</span>
+						<span className="font-semibold text-gray-800">Healy</span>
 					</div>
 
 					<div className="space-y-1">
