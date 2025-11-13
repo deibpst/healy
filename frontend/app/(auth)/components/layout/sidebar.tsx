@@ -3,13 +3,16 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; 
-import { Calendar, Home, List, Settings, LogOut } from 'lucide-react';
+import { Calendar, Home, List, Settings, LogIn, LogOut as LogOutIcon } from 'lucide-react';
 
 interface SidebarProps {
 	isOpen: boolean;
+	isSignedIn?: boolean;
+	onSignIn?: () => void;
+	onSignOut?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, isSignedIn = false, onSignIn, onSignOut }) => {
 	
 	const pathname = usePathname();
 
@@ -29,7 +32,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 
 					<div className="space-y-1">
 						<div className="text-xs text-gray-500 uppercase tracking-wider mb-3">PAGES</div>
-						
 						
 						<Link 
 							href="/components/dashboard" 
@@ -66,7 +68,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 							<Calendar size={20} />
 							<span className="text-sm font-medium">Calendar</span>
 						</Link>
-                        
 					</div>
 				</div>
 
@@ -75,10 +76,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
 						<Settings size={20} />
 						<span className="text-sm">Configuración</span>
 					</button>
-					<button className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-						<LogOut size={20} />
-						<span className="text-sm">Logout</span>
-					</button>
+					
+					{/* Botón de Google Sign In/Out */}
+					{!isSignedIn ? (
+						<button 
+							onClick={onSignIn}
+							className="w-full flex items-center gap-3 px-4 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+						>
+							<LogIn size={20} />
+							<span className="text-sm">Iniciar sesión</span>
+						</button>
+					) : (
+						<button 
+							onClick={onSignOut}
+							className="w-full flex items-center gap-3 px-4 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+						>
+							<LogOutIcon size={20} />
+							<span className="text-sm">Cerrar sesión</span>
+						</button>
+					)}
 				</div>
 				
 			</div>
