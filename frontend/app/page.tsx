@@ -59,6 +59,7 @@ export default function Home() {
 						rel="noopener noreferrer"
 					>
 						Calendario
+<<<<<<< HEAD
 					
 					</Link>
 					<Link
@@ -67,6 +68,8 @@ export default function Home() {
 						rel="noopener noreferrer"
 					>
 						Patient Dashboard
+=======
+>>>>>>> origin/frontend-fisio
 					</Link>
 				</div>
 			</main>
