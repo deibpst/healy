@@ -1,10 +1,12 @@
-import { Activity, Calendar, TrendingUp, Clock, CheckCircle2 } from "lucide-react";
+import { Activity, Calendar, TrendingUp, Clock, CheckCircle2, LogOut, User } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { Progress } from "../../components/ui/progress";
 import { Badge } from "../../components/ui/badge";
 import ExerciseCard from "./ExerciseCard";
 import NextAppointment from "./NextAppointment";
 import ProgressStats from "./ProgressStats";
+import { Button } from "../../components/ui/button";
+import { useRouter } from "next/navigation";
 
 // Datos de ejemplo - estos vendrían de tu backend
 const exercises = [
@@ -50,6 +52,7 @@ const PatientDashboard = () => {
   const completedToday = exercises.filter(e => e.completed).length;
   const totalExercises = exercises.length;
   const completionRate = Math.round((completedToday / totalExercises) * 100);
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent via-background to-accent/50">
@@ -66,11 +69,35 @@ const PatientDashboard = () => {
                 <p className="text-sm text-muted-foreground">Panel del Paciente</p>
               </div>
             </div>
-            <Badge variant="secondary" className="gap-2">
-              <Clock className="h-4 w-4" />
-              {new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}
-            </Badge>
+            <div className="flex items-center gap-2">
+    <Button 
+      variant="outline" 
+      size="sm" 
+      className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+      onClick={() => {
+        //aca va la logica amiguitos 
+         router.push('/editProfile');
+      }}
+    >
+      <User className="h-4 w-4" />
+      Editar Perfil
+    </Button>
+    
+    <Button 
+      variant="outline" 
+      size="sm" 
+      className="gap-2 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+      onClick={() => {
+        //aca tambien va la logica amiguitos, por el momento solo redirige al login
+        window.location.href = '/login';
+      }}
+    >
+      <LogOut className="h-4 w-4" />
+      Cerrar Sesión
+    </Button>
+  </div>
           </div>
+          
         </div>
       </header>
 
