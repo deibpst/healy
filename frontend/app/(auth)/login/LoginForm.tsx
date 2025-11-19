@@ -1,35 +1,23 @@
 'use client';
 import { useState } from 'react';
-<<<<<<< HEAD
 import { validateLogin } from '@/lib/validations/validateLogin'; // Asegúrate de que esta ruta sea correcta
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; 
-=======
-import { validateLogin } from '@/lib/validations/validateLogin';
-import Link from 'next/link';
-
->>>>>>> origin/frontend-fisio
 
 export default function LoginForm() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-<<<<<<< HEAD
   const [loading, setLoading] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string>('');
 
   const router = useRouter(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
-=======
-
-  const handleSubmit = (e: React.FormEvent) => {
->>>>>>> origin/frontend-fisio
     e.preventDefault();
 
     const { isValid, errors: validationErrors } = validateLogin({ email, password });
     setErrors(validationErrors);
-<<<<<<< HEAD
     setApiError('');
 
     if (!isValid) return;
@@ -65,16 +53,10 @@ export default function LoginForm() {
     } finally {
       setLoading(false);
     }
-=======
-
-    if (!isValid) return;
-    console.log('Login válido:', { email, password });
->>>>>>> origin/frontend-fisio
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-<<<<<<< HEAD
       {apiError && (
         <p className="p-3 bg-red-100 text-red-700 border border-red-300 rounded-md">
           {apiError}
@@ -82,8 +64,6 @@ export default function LoginForm() {
       )}
       
       {/* ... (código de inputs) ... */}
-=======
->>>>>>> origin/frontend-fisio
       <div>
         <label className="font-medium text-gray-700">Correo</label>
         <input
@@ -91,12 +71,8 @@ export default function LoginForm() {
           placeholder="correo@ejemplo.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-<<<<<<< HEAD
           className="input" 
           disabled={loading}
-=======
-          className="input"
->>>>>>> origin/frontend-fisio
         />
         {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
       </div>
@@ -109,25 +85,17 @@ export default function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="input"
-<<<<<<< HEAD
           disabled={loading}
-=======
->>>>>>> origin/frontend-fisio
         />
         {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
       </div>
 
-<<<<<<< HEAD
       <button 
         type="submit" 
         className="btn-primary w-full" 
         disabled={loading}
       >
         {loading ? 'Cargando...' : 'Iniciar sesión'}
-=======
-      <button type="submit" className="btn-primary w-full">
-        Iniciar sesión
->>>>>>> origin/frontend-fisio
       </button>
 
       <p className="text-sm text-center text-gray-600 mt-4">
@@ -136,14 +104,6 @@ export default function LoginForm() {
           Regístrate
         </Link>
       </p>
-<<<<<<< HEAD
     </form>
   );
 }
-=======
-
-      
-    </form>
-  );
-}
->>>>>>> origin/frontend-fisio
