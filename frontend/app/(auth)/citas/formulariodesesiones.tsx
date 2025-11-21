@@ -147,7 +147,7 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
                     {/* Zona afectada / Historial médico (PF11-V401) */}
                     <div>
                         <label htmlFor="zonaAfectada" className="block text-sm font-medium text-gray-700">
-                            Zona afectada / Historial (diabetes, hipertensión, etc.)
+                            Zona afectada / Historial (Osteoporosis, Artritis, Fibromialgia, cirugías previas, problemas neurológicos, etc.)
                         </label>
                         <input
                             id="zonaAfectada"
@@ -156,7 +156,7 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
                             value={datosFormulario.zonaAfectada}
                             onChange={manejarCambio}
                             className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="(diabetes, hipertensión, problemas cardíacos, asma, etc.)"
+                            placeholder="(Osteoporosis, Artritis, Fibromialgia, cirugías previas, problemas neurológicos, etc.)"
                         />
                         {errores.zonaAfectada && <p className="mt-1 text-sm text-red-600">{errores.zonaAfectada}</p>}
                     </div>
@@ -355,13 +355,13 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
                     </div>
                 </div>
 
-                {/* Botón de Envío Final (PF16-V406) */}
-                <button
-                    type="submit"
-                    className="w-full py-3 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition duration-150 mt-6"
-                >
-                    Guardar
-                </button>
+                {/* Botón de Envío Final (PF16-V406) - Color Personalizado */}
+                <button
+                    type="submit"
+                    className="w-full py-3 bg-[#2E748E] text-white font-semibold rounded-md hover:bg-[#23596D] transition duration-150 mt-6"
+                >
+                    Guardar
+                </button>
             </form>
         </div>
     );
