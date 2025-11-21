@@ -68,7 +68,7 @@ export default function EditProfile() {
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2E748F'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push('/patient-dashboard')}
               >
                 <User className="h-4 w-4" />
                 Dashboard
