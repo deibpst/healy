@@ -18,113 +18,205 @@ const ProgressStats = () => {
   const adherenceRate = Math.round((totalCompleted / totalExercises) * 100);
 
   return (
-    <Card className="border-primary/20 bg-card/80 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-foreground">
-          <TrendingUp className="h-5 w-5 text-primary" />
-          Mi Progreso
-        </CardTitle>
-        <CardDescription className="text-muted-foreground">
-          Seguimiento de tu adherencia al tratamiento
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Estadísticas principales */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
-                <Target className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{adherenceRate}%</p>
-                <p className="text-xs text-muted-foreground">Adherencia Semanal</p>
-              </div>
+    <div className="p-6 space-y-8">
+      {/* Estadísticas principales */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div 
+          className="p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-300"
+          style={{ 
+            background: 'linear-gradient(135deg, rgba(46, 116, 143, 0.1), rgba(46, 116, 143, 0.05))',
+            borderColor: 'rgba(46, 116, 143, 0.3)'
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <div 
+              className="h-14 w-14 rounded-full flex items-center justify-center shadow-sm"
+              style={{ backgroundColor: 'rgba(46, 116, 143, 0.2)' }}
+            >
+              <Target className="h-6 w-6" style={{ color: '#2E748F' }} />
             </div>
-          </div>
-
-          <div className="p-4 rounded-lg bg-gradient-to-br from-success/10 to-success/5 border border-success/20">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-success/20 flex items-center justify-center">
-                <Award className="h-6 w-6 text-success" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">{totalCompleted}</p>
-                <p className="text-xs text-muted-foreground">Ejercicios Completados</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-lg bg-gradient-to-br from-accent to-accent/50 border border-border">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <CalendarIcon className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground">21</p>
-                <p className="text-xs text-muted-foreground">Días en Tratamiento</p>
-              </div>
+            <div>
+              <p className="text-3xl font-bold" style={{ color: '#2E748F' }}>
+                {adherenceRate}%
+              </p>
+              <p className="text-sm font-medium" style={{ color: '#2E748F', opacity: 0.7 }}>
+                Adherencia Semanal
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Gráfico de barras semanal */}
-        <div>
-          <h4 className="text-sm font-medium text-foreground mb-4">Actividad de la Semana</h4>
-          <div className="flex items-end justify-between gap-2 h-40">
-            {weeklyData.map((day, index) => {
-              const percentage = (day.completed / day.total) * 100;
-              return (
-                <div key={index} className="flex-1 flex flex-col items-center gap-2">
-                  <div className="w-full bg-muted rounded-t-lg relative overflow-hidden h-full flex items-end">
-                    <div
-                      className={`w-full rounded-t-lg transition-all ${
-                        percentage === 100
-                          ? 'bg-success'
-                          : percentage >= 75
-                          ? 'bg-primary'
-                          : percentage >= 50
-                          ? 'bg-warning'
-                          : 'bg-destructive'
-                      }`}
-                      style={{ height: `${percentage}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-muted-foreground font-medium">{day.day}</span>
-                  <span className="text-xs text-muted-foreground">{day.completed}/{day.total}</span>
+        <div 
+          className="p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-300"
+          style={{ 
+            background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05))',
+            borderColor: 'rgba(34, 197, 94, 0.3)'
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <div 
+              className="h-14 w-14 rounded-full flex items-center justify-center shadow-sm"
+              style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)' }}
+            >
+              <Award className="h-6 w-6" style={{ color: '#22c55e' }} />
+            </div>
+            <div>
+              <p className="text-3xl font-bold" style={{ color: '#22c55e' }}>
+                {totalCompleted}
+              </p>
+              <p className="text-sm font-medium" style={{ color: '#22c55e', opacity: 0.7 }}>
+                Ejercicios Completados
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div 
+          className="p-6 rounded-xl border shadow-sm hover:shadow-md transition-all duration-300"
+          style={{ 
+            background: 'linear-gradient(135deg, rgba(19, 152, 214, 0.1), rgba(19, 152, 214, 0.05))',
+            borderColor: 'rgba(19, 152, 214, 0.3)'
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <div 
+              className="h-14 w-14 rounded-full flex items-center justify-center shadow-sm"
+              style={{ backgroundColor: 'rgba(19, 152, 214, 0.2)' }}
+            >
+              <CalendarIcon className="h-6 w-6" style={{ color: '#1398D6' }} />
+            </div>
+            <div>
+              <p className="text-3xl font-bold" style={{ color: '#1398D6' }}>
+                21
+              </p>
+              <p className="text-sm font-medium" style={{ color: '#1398D6', opacity: 0.7 }}>
+                Días en Tratamiento
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Gráfico de barras semanal */}
+      <div 
+        className="p-6 rounded-xl border shadow-sm"
+        style={{ 
+          background: 'rgba(255, 255, 255, 0.8)',
+          borderColor: 'rgba(46, 116, 143, 0.2)'
+        }}
+      >
+        <h4 className="text-lg font-semibold mb-6" style={{ color: '#2E748F' }}>
+          Actividad de la Semana
+        </h4>
+        <div className="flex items-end justify-between gap-3 h-48 px-2">
+          {weeklyData.map((day, index) => {
+            const percentage = (day.completed / day.total) * 100;
+            return (
+              <div key={index} className="flex-1 flex flex-col items-center gap-3">
+                <div className="w-full bg-gray-200 rounded-t-lg relative overflow-hidden h-full flex items-end shadow-inner">
+                  <div
+                    className="w-full rounded-t-lg transition-all duration-500 shadow-sm"
+                    style={{ 
+                      height: `${percentage}%`,
+                      backgroundColor: percentage === 100 
+                        ? '#22c55e' 
+                        : percentage >= 75 
+                        ? '#2E748F' 
+                        : percentage >= 50 
+                        ? '#f59e0b' 
+                        : '#ef4444'
+                    }}
+                  />
                 </div>
-              );
-            })}
-          </div>
+                <div className="text-center">
+                  <span className="text-sm font-semibold block" style={{ color: '#2E748F' }}>
+                    {day.day}
+                  </span>
+                  <span className="text-xs mt-1 block" style={{ color: '#2E748F', opacity: 0.7 }}>
+                    {day.completed}/{day.total}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
+      </div>
 
-        {/* Tiempo dedicado */}
-        <div className="space-y-3 pt-4 border-t">
-          <h4 className="text-sm font-medium text-foreground">Tiempo Dedicado Esta Semana</h4>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Lunes - Miércoles</span>
-              <span className="font-semibold text-foreground">45 min</span>
+      {/* Tiempo dedicado */}
+      <div 
+        className="p-6 rounded-xl border shadow-sm"
+        style={{ 
+          background: 'rgba(255, 255, 255, 0.8)',
+          borderColor: 'rgba(46, 116, 143, 0.2)'
+        }}
+      >
+        <h4 className="text-lg font-semibold mb-6" style={{ color: '#2E748F' }}>
+          Tiempo Dedicado Esta Semana
+        </h4>
+        
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium" style={{ color: '#2E748F', opacity: 0.8 }}>
+                Lunes - Miércoles
+              </span>
+              <span className="text-sm font-bold" style={{ color: '#2E748F' }}>
+                45 min
+              </span>
             </div>
-            <Progress value={75} className="h-2" />
+            <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+              <div 
+                className="h-3 rounded-full transition-all duration-500 shadow-sm"
+                style={{ 
+                  width: '75%',
+                  background: 'linear-gradient(90deg, #2E748F, #1398D6)'
+                }}
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Jueves - Sábado</span>
-              <span className="font-semibold text-foreground">1 hr 15 min</span>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium" style={{ color: '#2E748F', opacity: 0.8 }}>
+                Jueves - Sábado
+              </span>
+              <span className="text-sm font-bold" style={{ color: '#2E748F' }}>
+                1 hr 15 min
+              </span>
             </div>
-            <Progress value={90} className="h-2" />
+            <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+              <div 
+                className="h-3 rounded-full transition-all duration-500 shadow-sm"
+                style={{ 
+                  width: '90%',
+                  background: 'linear-gradient(90deg, #2E748F, #1398D6)'
+                }}
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Domingo</span>
-              <span className="font-semibold text-foreground">30 min</span>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium" style={{ color: '#2E748F', opacity: 0.8 }}>
+                Domingo
+              </span>
+              <span className="text-sm font-bold" style={{ color: '#2E748F' }}>
+                30 min
+              </span>
             </div>
-            <Progress value={50} className="h-2" />
+            <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+              <div 
+                className="h-3 rounded-full transition-all duration-500 shadow-sm"
+                style={{ 
+                  width: '50%',
+                  background: 'linear-gradient(90deg, #2E748F, #1398D6)'
+                }}
+              />
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
