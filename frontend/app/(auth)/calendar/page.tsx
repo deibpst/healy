@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 
-import Header from '../layout/header';
-import Sidebar from '../layout/sidebar';
+import Header from '../components/layout/header';
+import Sidebar from '../components/layout/sidebar';
 import { googleCalendarService, GoogleCalendarEvent } from '@/app/services/googleCalendar';
 
 interface CalendarEvent {
