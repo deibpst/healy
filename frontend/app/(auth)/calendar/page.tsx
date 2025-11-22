@@ -2,9 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
-
-import Header from '../components/layout/header';
-import Sidebar from '../components/layout/sidebar';
 import { googleCalendarService, GoogleCalendarEvent } from '@/app/services/googleCalendar';
 
 interface CalendarEvent {
@@ -21,9 +18,6 @@ interface CalendarEvent {
 }
 
 export default function Calendar() {
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<'Day' | 'Week' | 'Month'>('Month');
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -358,7 +352,7 @@ export default function Calendar() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="p-8">
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -411,70 +405,57 @@ export default function Calendar() {
         </div>
       )}
 
-      {/* Sidebar con props de autenticación */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        isSignedIn={isSignedIn}
-        onSignIn={handleSignIn}
-        onSignOut={handleSignOut}
-      />
+      {/* Contenido principal */}
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Calendario</h1>
+      </div>
 
-      <div className="flex-1 overflow-auto">
-        <Header onMenuClick={toggleSidebar} />
+      {isLoading && (
+        <div className="text-center py-4 text-gray-600">
+          Cargando eventos de Google Calendar...
+        </div>
+      )}
 
-        <div className="p-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Calendario</h1>
+      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={goToToday}
+            className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            Hoy
+          </button>
+
+          <div className="flex items-center gap-4">
+            <button onClick={previousMonth} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft size={20} className="text-gray-600" />
+            </button>
+            <h2 className="text-xl font-semibold text-gray-800 min-w-48 text-center">
+              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+            </h2>
+            <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronRight size={20} className="text-gray-600" />
+            </button>
           </div>
 
-          {isLoading && (
-            <div className="text-center py-4 text-gray-600">
-              Cargando eventos de Google Calendar...
-            </div>
-          )}
-
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <div className="flex items-center justify-between mb-6">
-              <button
-                onClick={goToToday}
-                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                Hoy
-              </button>
-
-              <div className="flex items-center gap-4">
-                <button onClick={previousMonth} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <ChevronLeft size={20} className="text-gray-600" />
-                </button>
-                <h2 className="text-xl font-semibold text-gray-800 min-w-48 text-center">
-                  {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-                </h2>
-                <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <ChevronRight size={20} className="text-gray-600" />
-                </button>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setViewMode('Month')}
-                  className={`px-4 py-2 text-sm rounded-lg transition-colors ${
-                    viewMode === 'Month' ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  Mes
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-7 gap-0 border-t border-l border-gray-200">
-              {dayNames.map((day) => (
-                <div key={day} className="bg-gray-50 border-r border-b border-gray-200 p-3 text-center">
-                  <span className="text-xs font-semibold text-gray-600">{day}</span>
-                </div>
-              ))}
-              {renderCalendarDays()}
-            </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setViewMode('Month')}
+              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                viewMode === 'Month' ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              Mes
+            </button>
           </div>
+        </div>
+
+        <div className="grid grid-cols-7 gap-0 border-t border-l border-gray-200">
+          {dayNames.map((day) => (
+            <div key={day} className="bg-gray-50 border-r border-b border-gray-200 p-3 text-center">
+              <span className="text-xs font-semibold text-gray-600">{day}</span>
+            </div>
+          ))}
+          {renderCalendarDays()}
         </div>
       </div>
     </div>

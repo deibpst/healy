@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
+
 
 // Estilo personalizado para usar los colores específicos
 const primaryColor = 'rgb(110, 208, 235)'; // Perfil (Claro)
@@ -115,12 +117,14 @@ export default function ListaPacientesPage() {
 
               {/* Botones en columna (Perfil arriba, Archivar abajo) */}
               <div className="flex flex-col space-y-2">
-                <button
-                  className="px-6 py-2 text-white rounded-lg font-semibold text-sm hover:opacity-90 transition-colors"
-                  style={{ backgroundColor: primaryColor }}
-                >
+                <Link href="/detalles_paciente">
+                  <button
+                    className="px-6 py-2 text-white rounded-lg font-semibold text-sm hover:opacity-90 transition-colors w-full"
+                    style={{ backgroundColor: primaryColor }}
+                  >
                   Perfil
-                </button>
+                  </button>
+                </Link>
                 <button
                   className="px-6 py-2 text-white rounded-lg font-semibold text-sm hover:opacity-90 transition-colors"
                   style={{ backgroundColor: secondaryColor }}
@@ -199,14 +203,17 @@ export default function ListaPacientesPage() {
             )}
           </p>
           
-          <button 
-            className="flex items-center px-6 py-3 text-white rounded-full hover:opacity-90 transition-colors font-medium shadow-md"
-            style={{ backgroundColor: primaryColor }}
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </button>
+
+<Link 
+  href="/nuevo_paciente"
+  className="flex items-center px-6 py-3 text-white rounded-full hover:opacity-90 transition-colors font-medium shadow-md"
+  style={{ backgroundColor: '#005f5a' }}
+>
+  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+  </svg>
+  Agregar Paciente
+</Link>
         </div>
       </div>
     </div>
