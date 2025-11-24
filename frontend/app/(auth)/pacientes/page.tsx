@@ -2,71 +2,54 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-
+import { mockPatients, getEjerciciosByPatientId, getCitasByPatientId, getAntecedentesByPatientId } from '../data/mockData';
 
 // Estilo personalizado para usar los colores específicos
 const primaryColor = 'rgb(110, 208, 235)'; // Perfil (Claro)
 const secondaryColor = 'rgb(46, 116, 143)'; // Archivar (Oscuro)
 
+// Interface basada en los tipos de mockData
 interface Paciente {
-  id: number;
+  id: string;
   nombre: string;
-  condicion: string;
+  apellido: string;
   email: string;
   telefono: string;
+  edad: number;
+  fechaIngreso: string;
   ultimaSesion: string;
+  proximaSesion: string;
+  notasMedicas: string;
 }
 
 export default function ListaPacientesPage() {
-  const initialPacientes: Paciente[] = [
-    {
-      id: 1,
-      nombre: "María Gonzalez",
-      condicion: "Dolor de espalda baja",
-      email: "mariagonzalez@gmail.com",
-      telefono: "025 145 23 22",
-      ultimaSesion: "30/Oct/2025"
-    },
-    {
-      id: 2,
-      nombre: "Luiz Ortiz",
-      condicion: "Tensión cervical",
-      email: "luisortiz@gmail.com",
-      telefono: "025 145 23 22",
-      ultimaSesion: "10/Nov/2025"
-    }
-  ];
-
   const [searchTerm, setSearchTerm] = useState('');
   
+  // Usar los datos de mockData.ts
+  const initialPacientes: Paciente[] = mockPatients;
+
   // Filtra los pacientes basándose en el término de búsqueda
   const filteredPacientes = initialPacientes.filter(paciente => {
     const lowerCaseSearch = searchTerm.toLowerCase();
+    const nombreCompleto = `${paciente.nombre} ${paciente.apellido}`.toLowerCase();
+    
     return (
-      paciente.nombre.toLowerCase().includes(lowerCaseSearch) ||
+      nombreCompleto.includes(lowerCaseSearch) ||
       paciente.telefono.includes(lowerCaseSearch) ||
-      paciente.email.toLowerCase().includes(lowerCaseSearch)
+      paciente.email.toLowerCase().includes(lowerCaseSearch) ||
+      paciente.nombre.toLowerCase().includes(lowerCaseSearch) ||
+      paciente.apellido.toLowerCase().includes(lowerCaseSearch)
     );
   });
 
   // Componente para mostrar el icono de usuario
-  const Avatar = () => {
+  const Avatar = ({ nombre, apellido }: { nombre: string; apellido: string }) => {
+    const iniciales = `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase();
+    
     return (
       <div className="flex-shrink-0">
-        <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-full flex items-center justify-center text-white shadow-lg">
-          <svg 
-            className="w-8 h-8" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={1.5} 
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
-            />
-          </svg>
+        <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-full flex items-center justify-center text-white shadow-lg font-bold text-lg">
+          {iniciales}
         </div>
       </div>
     );
@@ -74,21 +57,28 @@ export default function ListaPacientesPage() {
   
   // Componente para la Fila del Paciente
   const PacienteRow = ({ paciente }: { paciente: Paciente }) => {
+    const nombreCompleto = `${paciente.nombre} ${paciente.apellido}`;
+    
     return (
       <div className="border-b border-gray-300 pb-8 mb-8 last:border-b-0 last:mb-0 last:pb-0">
         <div className="flex gap-4 items-start">
           
-          <Avatar />
+          <Avatar nombre={paciente.nombre} apellido={paciente.apellido} />
 
           <div className="grow">
             {/* Nombre y condición */}
             <div className="mb-3">
               <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                {paciente.nombre}
+                {nombreCompleto}
               </h2>
               <p className="text-gray-700">
-                {paciente.condicion}
+                {paciente.notasMedicas.split('.')[0]} {/* Primera oración de las notas médicas como condición */}
               </p>
+              <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                <span>Edad: {paciente.edad} años</span>
+                <span>•</span>
+                <span>Ingreso: {paciente.fechaIngreso}</span>
+              </div>
             </div>
 
             {/* Email y teléfono con iconos */}
@@ -107,7 +97,15 @@ export default function ListaPacientesPage() {
               </div>
             </div>
 
-            {/* Última sesión y botones - MÁS ARRIBA */}
+            {/* Información adicional */}
+            <div className="flex items-center gap-6 text-sm text-gray-600 mb-3">
+              <div className="flex items-center gap-1">
+                <span className="font-medium">Próxima sesión:</span>
+                <span>{paciente.proximaSesion}</span>
+              </div>
+            </div>
+
+            {/* Última sesión y botones */}
             <div className="flex items-center justify-end space-x-4 mt-2">
               {/* Última sesión al lado izquierdo de los botones */}
               <div className="text-gray-700 text-right">
@@ -122,7 +120,7 @@ export default function ListaPacientesPage() {
                     className="px-6 py-2 text-white rounded-lg font-semibold text-sm hover:opacity-90 transition-colors w-full"
                     style={{ backgroundColor: primaryColor }}
                   >
-                  Perfil
+                    Perfil
                   </button>
                 </Link>
                 <button
@@ -203,17 +201,16 @@ export default function ListaPacientesPage() {
             )}
           </p>
           
-
-<Link 
-  href="/nuevo_paciente"
-  className="flex items-center px-6 py-3 text-white rounded-full hover:opacity-90 transition-colors font-medium shadow-md"
-  style={{ backgroundColor: '#005f5a' }}
->
-  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-  </svg>
-  Agregar Paciente
-</Link>
+          <Link 
+            href="/nuevo_paciente"
+            className="flex items-center px-6 py-3 text-white rounded-full hover:opacity-90 transition-colors font-medium shadow-md"
+            style={{ backgroundColor: '#005f5a' }}
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Agregar Paciente
+          </Link>
         </div>
       </div>
     </div>
