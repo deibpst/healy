@@ -34,7 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isSignedIn = false, onSignIn,
 						<div className="text-xs text-gray-500 uppercase tracking-wider mb-3">PAGES</div>
 						
 						<Link 
-							href="/components/dashboard" 
+							href="" 
 							className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
 								isActive('/components/dashboard') 
 								? 'bg-blue-500 text-white shadow-sm' 
@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isSignedIn = false, onSignIn,
 						</Link>
 
 						<Link 
-							href="/components/orderList" 
+							href="/pacientes" 
 							className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
 								isActive('/components/orderList') 
 								? 'bg-blue-500 text-white shadow-sm' 
@@ -54,11 +54,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isSignedIn = false, onSignIn,
 							}`}
 						>
 							<List size={20} />
-							<span className="text-sm">Order Lists</span>
+							<span className="text-sm">Pacientes</span>
 						</Link>
 
 						<Link 
-							href="/components/calendar" 
+							href="/calendar" 
 							className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
 								isActive('/components/calendar') 
 								? 'bg-blue-500 text-white shadow-sm' 
