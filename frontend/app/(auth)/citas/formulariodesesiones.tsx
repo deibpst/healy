@@ -6,7 +6,8 @@ import { useState } from 'react';
 // 1. TIPADO DE PROPIEDADES Y ESTADO
 // ===============================================
 interface FormularioProps {
-    numeroCita: string; 
+    numeroCita: string;
+    onGuardar?: () => void; // ⬅️ Nueva prop opcional
 }
 
 interface EstadoFormularioLesion {
@@ -27,14 +28,14 @@ interface EstadoFormularioLesion {
     notas: string;
 }
 
-// Datos de ejemplo para el selector (simula la BD)
+// Quitar para el backend, aquí debe jalar los ejercicios de la BD
 const ejerciciosDisponibles = ['Estiramiento de Cuádriceps', 'Fortalecimiento de Núcleo', 'Movilización de Hombro'];
 
 
 // ===============================================
 // 2. COMPONENTE PRINCIPAL
 // ===============================================
-export default function FormularioRegistroLesion({ numeroCita }: FormularioProps) {
+export default function FormularioRegistroLesion({ numeroCita, onGuardar }: FormularioProps) {
     const [datosFormulario, setDatosFormulario] = useState<EstadoFormularioLesion>({
         zonaAfectada: '',
         causaLesion: '',
@@ -56,6 +57,15 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
     const [errores, setErrores] = useState<Record<string, string>>({});
     const [mostrarSelectorEjercicios, setMostrarSelectorEjercicios] = useState(false); 
 
+    const obtenerFechaHoy = () => {
+        const hoy = new Date();
+        const año = hoy.getFullYear();
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        return `${año}-${mes}-${dia}`;
+    };
+
+    const fechaMaxima = obtenerFechaHoy();
 
     // Lógica para añadir ejercicios a la lista de texto (PF17-V407)
     const manejarSeleccionEjercicio = (ejercicio: string) => {
@@ -92,7 +102,6 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
         e.preventDefault();
 
         const erroresValidacion: Record<string, string> = {};
-        const hoy = new Date().toISOString().split('T')[0]; 
 
         // PF11-V401: Validar campos obligatorios básicos
         if (!datosFormulario.zonaAfectada.trim()) {
@@ -105,8 +114,18 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
         // PF12-V402: Validar Fecha (obligatoria y no futura)
         if (!datosFormulario.fechaLesion) {
             erroresValidacion.fechaLesion = 'La fecha es obligatoria.';
-        } else if (datosFormulario.fechaLesion > hoy) {
-            erroresValidacion.fechaLesion = 'La fecha no puede ser futura.';
+        } else {
+            // Obtener fecha de hoy en formato YYYY-MM-DD (zona horaria local)
+            const hoy = new Date();
+            const añoHoy = hoy.getFullYear();
+            const mesHoy = String(hoy.getMonth() + 1).padStart(2, '0');
+            const diaHoy = String(hoy.getDate()).padStart(2, '0');
+            const fechaHoyStr = `${añoHoy}-${mesHoy}-${diaHoy}`;
+            
+            // Comparar directamente las strings en formato YYYY-MM-DD
+            if (datosFormulario.fechaLesion > fechaHoyStr) {
+                erroresValidacion.fechaLesion = 'La fecha no puede ser futura.';
+            }
         }
 
         // PF13-V403: Validar Nivel de Dolor (rango 1-10)
@@ -124,12 +143,16 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
         // PF16-V406: Lógica de Envío
         console.log('Registro de lesión y estado actual enviado:', datosFormulario);
         alert('Formulario completado con éxito. Revisa la consola para ver los datos.');
+        
+        // ⬇️ Llamar a onGuardar para incrementar el número de cita ⬇️
+        if (onGuardar) {
+            onGuardar();
+        }
     };
 
     // 5. ESTRUCTURA DEL FORMULARIO (JSX)
     return (
-        // Estilos: max-w-xl mx-auto p-8 bg-white shadow-xl (Se quitaron rounded-lg y border-t-4)
-        <div className="max-w-xl mx-auto p-8 bg-white shadow-xl"> 
+        <div className="max-w-xl mx-auto p-8 bg-white shadow-xl">
             
             {/* Encabezado Dinámico (PF14-V404) */}
             <h1 className="text-xl font-light text-gray-500">
@@ -180,22 +203,22 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
                     {/* Fila de Fecha y Descripción/Nivel de Dolor */}
                     <div className="grid grid-cols-3 gap-4">
                         
-                        {/* Fecha de la lesión (PF12-V402) */}
-                        <div className="col-span-1">
-                            <label htmlFor="fechaLesion" className="block text-sm font-medium text-gray-700">
-                                Fecha de la lesión
-                            </label>
-                            <input
-                                id="fechaLesion"
-                                name="fechaLesion"
-                                type="date"
-                                value={datosFormulario.fechaLesion}
-                                onChange={manejarCambio}
-                                className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            />
-                            {errores.fechaLesion && <p className="mt-1 text-sm text-red-600">{errores.fechaLesion}</p>}
-                        </div>
-
+                      {/* Fecha de la lesión (PF12-V402) */}
+                    <div className="col-span-1">
+                        <label htmlFor="fechaLesion" className="block text-sm font-medium text-gray-700">
+                            Fecha de la lesión
+                        </label>
+                        <input
+                            id="fechaLesion"
+                            name="fechaLesion"
+                            type="date"
+                            value={datosFormulario.fechaLesion}
+                            onChange={manejarCambio}
+                            max={fechaMaxima}
+                            className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        />
+                        {errores.fechaLesion && <p className="mt-1 text-sm text-red-600">{errores.fechaLesion}</p>}
+                    </div>
                         {/* Descripción de dolor */}
                         <div className="col-span-1">
                             <label htmlFor="descripcionDolor" className="block text-sm font-medium text-gray-700">
@@ -322,7 +345,7 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
 
                             {/* Selector de Ejercicios (Simulado) */}
                             {mostrarSelectorEjercicios && (
-                                <div className="absolute z-10 top-full right-0 mt-1 w-64 bg-white border border-gray-300 rounded-md shadow-lg">
+                                <div className="absolute z-10 top-full right-0 mt-1 w-80 bg-white border border-gray-300 rounded-md shadow-lg">
                                     <h4 className='p-2 text-xs font-semibold text-gray-600 border-b'>Seleccionar ejercicio:</h4>
                                     {ejerciciosDisponibles.map((ejercicio) => (
                                         <div 
@@ -356,12 +379,12 @@ export default function FormularioRegistroLesion({ numeroCita }: FormularioProps
                 </div>
 
                 {/* Botón de Envío Final (PF16-V406) - Color Personalizado */}
-                <button
-                    type="submit"
-                    className="w-full py-3 bg-[#2E748E] text-white font-semibold rounded-md hover:bg-[#23596D] transition duration-150 mt-6"
-                >
-                    Guardar
-                </button>
+                <button
+                    type="submit"
+                    className="w-full py-3 bg-[#2E748E] text-white font-semibold rounded-md hover:bg-[#23596D] transition duration-150 mt-6"
+                >
+                    Guardar
+                </button>
             </form>
         </div>
     );
