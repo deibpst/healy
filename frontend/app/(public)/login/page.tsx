@@ -16,7 +16,7 @@ export default function LoginPage() {
       </div>
 
       {/* Lado derecho: imagen */}
-      <div className="hidden md:block h-full rounded-l-full overflow-hidden">
+      <div className="hidden md:block h-full  overflow-hidden">
         <img
           src="/img/ejemplo.jpg"
           alt="Fisioterapeuta"
