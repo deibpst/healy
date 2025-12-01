@@ -55,7 +55,7 @@ export default function Home() {
 					</Link>
 					<Link 
 						className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-zinc-300 bg-white px-5 transition-colors hover:bg-gray-100 dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-						href="components\calendar"
+						href="calendar"
 						rel="noopener noreferrer"
 					>
 						Calendario
