@@ -23,13 +23,21 @@ export function validateRegister(form: any, role: string) {
     errors.confirm = 'Las contraseñas no coinciden';
   }
 
-  // Teléfono: 12 dígitos exactos y prefijo 52 fijo
+  // Teléfono: prefijo fijo 52 + 10 dígitos de número
   if (!form.phone) {
     errors.phone = 'El teléfono es obligatorio';
-  } else if (!/^\d{12}$/.test(form.phone.trim())) {
-    errors.phone = 'Teléfono inválido (debe tener 12 dígitos)';
-  } else if (!form.phone.trim().startsWith('52')) {
-    errors.phone = 'El teléfono debe iniciar con 52';
+  } else {
+    const phoneTrim = form.phone.trim();
+
+    // debe iniciar con 52
+    if (!phoneTrim.startsWith('52')) {
+      errors.phone = 'El teléfono debe iniciar con 52';
+    } else {
+      const numberPart = phoneTrim.slice(2); // lo que escribió el usuario
+      if (!/^\d{10}$/.test(numberPart)) {
+        errors.phone = 'Teléfono inválido (debe tener 10 dígitos después de la lada)';
+      }
+    }
   }
 
   if (role === 'fisioterapeuta') {
