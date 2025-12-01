@@ -1,29 +1,39 @@
 'use client';
 import { useState } from 'react';
-// Asegúrate de que esta ruta sea correcta en tu proyecto
-import { validateRegister } from '@/lib/validations/validateRegister'; 
+import { validateRegister } from '@/lib/validations/validateRegister';
 import RoleTabs from './RoleTabs';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 
 export default function RegisterForm() {
+  const router = useRouter();
+
   const [role, setRole] = useState<'paciente' | 'fisioterapeuta'>('paciente');
+
   const [form, setForm] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirm: '',
-    phone: '',
-    cedula: '',
+    phone: '52', // prefijo fijo por defecto
+    codigo: '', // solo fisio
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState<boolean>(false); 
-  const [apiError, setApiError] = useState<string>('');    
 
-  const router = useRouter(); 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [successMsg, setSuccessMsg] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // SOLO para el input del número (10 dígitos)
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 10); // máximo 10
+    setForm(prev => ({
+      ...prev,
+      phone: '52' + digits, // siempre fuerza el prefijo
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,173 +41,156 @@ export default function RegisterForm() {
 
     const { isValid, errors: regErrors } = validateRegister(form, role);
     setErrors(regErrors);
-    setApiError('');
-
+    setSuccessMsg('');
     if (!isValid) return;
 
-    setLoading(true);
+    console.log('Registro válido:', { ...form, role });
 
-    const dataToSend = {
-      name: form.name,
-      email: form.email,
-      password: form.password,
-      phone: form.phone,
-      role: role,
-      cedula: role === 'fisioterapeuta' ? form.cedula : undefined,
-    };
-    
-    try {
-      // Usando el proxy configurado en next.config.js
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setApiError(data.msg || 'Error al crear la cuenta. Inténtalo de nuevo.');
-        return;
-      }
-
-      console.log('Registro exitoso:', data);
-      setForm({ name: '', email: '', password: '', confirm: '', phone: '', cedula: '' });
-      setErrors({});
-
-      router.push('/login?registered=true'); 
-      
-    } catch (error) {
-      console.error('Error de conexión:', error);
-      setApiError('No se pudo conectar con el servidor. Revisa tu conexión.');
-    } finally {
-      setLoading(false);
-    }
+    setSuccessMsg('¡Registro exitoso!');
+    router.push('/login');
   };
+
+  // lo que el usuario escribe (sin el 52)
+  const phoneNumberOnly = form.phone.slice(2);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <RoleTabs role={role} setRole={setRole} />
-      
-      {apiError && (
-        <p className="p-3 bg-red-100 text-red-700 border border-red-300 rounded-md">
-          {apiError}
-        </p>
-      )}
 
-      {/* INICIO DE CAMPOS DE ENTRADA */}
-      
-      {/* Campo Nombre completo */}
       <div>
-        <label className="font-medium text-gray-700">Nombre completo</label>
+        <label className="font-medium text-gray-700">Nombre(s)</label>
         <input
-          name="name"
-          placeholder="Tu nombre completo"
-          value={form.name}
+          name="firstName"
+          placeholder="Tu(s) nombre(s)"
+          value={form.firstName}
           onChange={handleChange}
           className="w-full p-2 border border-gray-300 rounded-md"
-          disabled={loading}
         />
-        {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+        {errors.firstName && (
+          <p className="text-sm text-red-500">{errors.firstName}</p>
+        )}
       </div>
 
-      {/* Campo Correo electrónico (FALTABA) */}
       <div>
-        <label className="font-medium text-gray-700">Correo electrónico</label>
+        <label className="font-medium text-gray-700">Apellidos</label>
+        <input
+          name="lastName"
+          placeholder="Tus apellidos"
+          value={form.lastName}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+        {errors.lastName && (
+          <p className="text-sm text-red-500">{errors.lastName}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="font-medium text-gray-700">Correo</label>
         <input
           name="email"
-          type="email"
           placeholder="correo@ejemplo.com"
           value={form.email}
           onChange={handleChange}
           className="w-full p-2 border border-gray-300 rounded-md"
-          disabled={loading}
         />
         {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
       </div>
 
-      {/* Campo Contraseña (FALTABA) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
+      <div className="flex gap-2">
+        <div className="flex-1">
           <label className="font-medium text-gray-700">Contraseña</label>
           <input
             name="password"
             type="password"
-            placeholder="Mínimo 6 caracteres"
+            placeholder="******"
             value={form.password}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md"
-            disabled={loading}
           />
           {errors.password && (
             <p className="text-sm text-red-500">{errors.password}</p>
           )}
         </div>
 
-        {/* Campo Confirmar Contraseña (FALTABA) */}
-        <div>
-          <label className="font-medium text-gray-700">Confirmar contraseña</label>
+        <div className="flex-1">
+          <label className="font-medium text-gray-700">Confirmar</label>
           <input
             name="confirm"
             type="password"
-            placeholder="Repite la contraseña"
+            placeholder="******"
             value={form.confirm}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md"
-            disabled={loading}
           />
           {errors.confirm && (
             <p className="text-sm text-red-500">{errors.confirm}</p>
           )}
         </div>
       </div>
-      
-      {/* Campo Teléfono (FALTABA) */}
+
+      {/* Teléfono con 52 fijo */}
       <div>
         <label className="font-medium text-gray-700">Teléfono</label>
-        <input
-          name="phone"
-          placeholder="1234567890"
-          value={form.phone}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded-md"
-          disabled={loading}
-        />
-        {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
+
+        <div className="flex gap-2">
+          {/* Prefijo fijo no editable */}
+          <input
+            value="52"
+            disabled
+            className="w-16 p-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
+          />
+
+          {/* Número editable de 10 dígitos */}
+          <input
+            name="phoneNumber"
+            placeholder="7561100133"
+            value={phoneNumberOnly}
+            onChange={handlePhoneNumberChange}
+            className="flex-1 p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <p className="text-xs text-gray-500 mt-1">(lada obligatoria de mexico)</p>
+
+        {errors.phone && (
+          <p className="text-sm text-red-500">{errors.phone}</p>
+        )}
       </div>
 
-      {/* Campo visible solo para fisioterapeutas (Ya existía, pero se incluye para integridad) */}
       {role === 'fisioterapeuta' && (
         <div>
-          <label className="font-medium text-gray-700">Cédula profesional</label>
+          <label className="font-medium text-gray-700">Código</label>
           <input
-            name="cedula"
-            placeholder="Cédula profesional"
-            value={form.cedula}
+            name="codigo"
+            placeholder="Código proporcionado por el encargado"
+            value={form.codigo}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md"
-            disabled={loading}
           />
-          {errors.cedula && (
-            <p className="text-sm text-red-500">{errors.cedula}</p>
+          {errors.codigo && (
+            <p className="text-sm text-red-500">{errors.codigo}</p>
           )}
         </div>
       )}
 
       <button
         type="submit"
-        className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-        disabled={loading}
+        className="w-full py-2 bg-[#337790] text-white rounded-md hover:bg-[#2b6478] transition"
       >
-        {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+        Crear cuenta
       </button>
 
+      {successMsg && (
+        <p className="text-sm text-green-600 text-center font-medium">
+          {successMsg}
+        </p>
+      )}
+
       <p className="text-sm text-center text-gray-600 mt-4">
-        ¿Ya tienes cuenta?{' '}
-        <Link href="/login" className="text-blue-600 hover:underline">
-          Iniciar sesión
+        ¿Ya tienes una cuenta?{' '}
+        <Link href="/login" className="text-[#337790] hover:underline">
+          Inicia sesión
         </Link>
       </p>
     </form>
