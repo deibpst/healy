@@ -1,20 +1,43 @@
 export function validateRegister(form: any, role: string) {
   const errors: Record<string, string> = {};
-  if (!form.name) errors.name = 'El nombre es obligatorio';
+
+  if (!form.firstName || form.firstName.trim().length < 2) {
+    errors.firstName = 'El/los nombre(s) son obligatorios';
+  }
+
+  if (!form.lastName || form.lastName.trim().length < 2) {
+    errors.lastName = 'Los apellidos son obligatorios';
+  }
+
   if (!form.email) {
     errors.email = 'El correo es obligatorio';
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
     errors.email = 'Correo inválido';
   }
+
   if (!form.password || form.password.length < 6) {
     errors.password = 'Debe tener al menos 6 caracteres';
   }
+
   if (form.password !== form.confirm) {
     errors.confirm = 'Las contraseñas no coinciden';
   }
-  if (!form.phone) errors.phone = 'El teléfono es obligatorio';
-  if (role === 'fisioterapeuta' && !form.cedula) {
-    errors.cedula = 'La cédula es obligatoria';
+
+  // Teléfono: 12 dígitos exactos y prefijo 52 fijo
+  if (!form.phone) {
+    errors.phone = 'El teléfono es obligatorio';
+  } else if (!/^\d{12}$/.test(form.phone.trim())) {
+    errors.phone = 'Teléfono inválido (debe tener 12 dígitos)';
+  } else if (!form.phone.trim().startsWith('52')) {
+    errors.phone = 'El teléfono debe iniciar con 52';
+  }
+
+  if (role === 'fisioterapeuta') {
+    if (!form.codigo) {
+      errors.codigo = 'El código es obligatorio';
+    } else if (form.codigo.trim() !== 'fisioterapeuta123') {
+      errors.codigo = 'Código inválido';
+    }
   }
 
   const isValid = Object.keys(errors).length === 0;

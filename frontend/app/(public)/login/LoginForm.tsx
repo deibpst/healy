@@ -45,13 +45,14 @@ export default function LoginForm() {
         {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
       </div>
 
-      <button type="submit" className="btn-primary w-full">
+      <button type="submit" className="w-full py-2 bg-[#337790] text-white rounded-md hover:bg-[#337790] transition"
+>
         Iniciar sesión
       </button>
 
       <p className="text-sm text-center text-gray-600 mt-4">
         ¿No tienes cuenta?{' '}
-        <Link href="/register" className="text-blue-600 hover:underline">
+        <Link href="/register" className="text-[#337790] hover:underline">
           Regístrate
         </Link>
       </p>
