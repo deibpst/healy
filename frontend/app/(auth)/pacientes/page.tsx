@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { mockPatients, getEjerciciosByPatientId, getCitasByPatientId, getAntecedentesByPatientId } from '../data/mockData';
 
 // Estilo personalizado para usar los colores específicos
-const primaryColor = 'rgb(110, 208, 235)'; // Perfil (Claro)
-const secondaryColor = 'rgb(46, 116, 143)'; // Archivar (Oscuro)
+const primaryColor = '#6ed0eb'; // Perfil (Claro)
+const secondaryColor = '#337790 '; // Archivar (Oscuro)
 
 // Interface basada en los tipos de mockData
 interface Paciente {
@@ -48,7 +48,7 @@ export default function ListaPacientesPage() {
     
     return (
       <div className="flex-shrink-0">
-        <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-cyan-600 rounded-full flex items-center justify-center text-white shadow-lg font-bold text-lg">
+        <div className="w-16 h-16 bg-gradient-to-br from-[#337790] to-cyan-600 rounded-full flex items-center justify-center text-white shadow-lg font-bold text-lg">
           {iniciales}
         </div>
       </div>
@@ -147,7 +147,7 @@ export default function ListaPacientesPage() {
             Mis Pacientes
           </h1>
           
-          {/* Search Bar - Estilo minimalista como en la imagen */}
+          {/* Search Bar - Estilo minimalista como en la imagen 
           <div className="relative max-w-2xl">
             <div className="flex items-center border-b border-gray-300 pb-2">
               <svg 
@@ -171,7 +171,7 @@ export default function ListaPacientesPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-          </div>
+          </div>  */}
         </div>
 
         {/* Separador */}
@@ -204,7 +204,7 @@ export default function ListaPacientesPage() {
           <Link 
             href="/nuevo_paciente"
             className="flex items-center px-6 py-3 text-white rounded-full hover:opacity-90 transition-colors font-medium shadow-md"
-            style={{ backgroundColor: '#005f5a' }}
+            style={{ backgroundColor: '#337790' }}
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

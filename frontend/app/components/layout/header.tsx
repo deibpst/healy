@@ -7,7 +7,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 	return (
-		<div className="bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-10">
+		<div className="bg-white border-b border-gray-200 px-8 py-8 sticky top-0 z-10">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-4">
 					<button onClick={onMenuClick} className="p-2 hover:bg-gray-100 rounded-lg">
@@ -29,9 +29,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 						<span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
 					</button>
 					<div className="flex items-center gap-3">
-						<div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full">
+						<div className="w-10 h-10 bg-gradient-to-br from-[#337790] to-[#6ed0eb] rounded-full">
 						</div>
-						<span className="text-sm font-medium text-gray-700">Jose Jose</span>
+						<span className="text-lg font-medium text-gray-700">User</span>
 					</div>
 				</div>
 			</div>

@@ -174,7 +174,7 @@ export default function NuevoPacienteForm() {
       {/* Botón enviar */}
       <button
         type="submit"
-        className="mt-2 w-full rounded-lg bg-teal-700 py-3 text-sm font-semibold text-white hover:bg-teal-800 transition-colors"
+        className="mt-2 w-full rounded-lg bg-[#337790] py-3 text-sm font-semibold text-white hover:bg-teal-800 transition-colors"
       >
         Nuevo Paciente
       </button>

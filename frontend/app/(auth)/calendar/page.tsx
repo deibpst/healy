@@ -441,7 +441,7 @@ export default function Calendar() {
             <button
               onClick={() => setViewMode('Month')}
               className={`px-4 py-2 text-sm rounded-lg transition-colors ${
-                viewMode === 'Month' ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-50'
+                viewMode === 'Month' ? 'bg-[#337790] text-white' : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
               Mes
