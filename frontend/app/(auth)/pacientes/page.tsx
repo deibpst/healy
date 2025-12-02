@@ -123,12 +123,13 @@ export default function ListaPacientesPage() {
                     Perfil
                   </button>
                 </Link>
+                {/*
                 <button
                   className="px-6 py-2 text-white rounded-lg font-semibold text-sm hover:opacity-90 transition-colors"
                   style={{ backgroundColor: secondaryColor }}
                 >
                   Archivar
-                </button>
+                </button>*/}
               </div>
             </div>
           </div>
@@ -147,7 +148,7 @@ export default function ListaPacientesPage() {
             Mis Pacientes
           </h1>
           
-          {/* Search Bar - Estilo minimalista como en la imagen 
+          {/* Search Bar PRIMERO VEO SI ES FUNCIONA EL DEL HEADER
           <div className="relative max-w-2xl">
             <div className="flex items-center border-b border-gray-300 pb-2">
               <svg 
