@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation'; 
-import { Calendar, Home, List, Settings, LogIn, LogOut as LogOutIcon } from 'lucide-react';
+import { Calendar, Home,HeartPulse, List, Settings, LogIn, LogOut as LogOutIcon } from 'lucide-react';
 
 interface SidebarProps {
 	isOpen: boolean;
@@ -23,26 +23,29 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isSignedIn = false, onSignIn,
 			<div className="p-6 h-full flex flex-col justify-between">
 				
 				<div>
-					<div className="flex items-center gap-2 mb-8">
-						<div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
-							<span className="text-white font-bold text-sm">RS</span>
-						</div>
-						<span className="font-semibold text-gray-800">Healy</span>
+					<div className="flex items-center justify-start gap-0 mb-8">
+
+							<img
+								src="/img/logo_sin_fondo.png"
+								alt="Icono"
+								className="w-25 h-25 object-contain"
+							/>
+						<span className="font-semibold text-gray-500">HEALY</span>
 					</div>
 
 					<div className="space-y-1">
 						<div className="text-xs text-gray-500 uppercase tracking-wider mb-3">PAGES</div>
 						
 						<Link 
-							href="" 
+							href="/nuevo_paciente" 
 							className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
-								isActive('/components/dashboard') 
+								isActive('/components/nuevo_paciente') 
 								? 'bg-blue-500 text-white shadow-sm' 
 								: 'text-gray-600 hover:bg-gray-50'
 							}`}
 						>
-							<Home size={20} />
-							<span className="text-sm">Dashboard</span>
+							<HeartPulse size={20} />
+							<span className="text-sm">Nuevo paciente</span>
 						</Link>
 
 						<Link 
@@ -81,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isSignedIn = false, onSignIn,
 					{!isSignedIn ? (
 						<button 
 							onClick={onSignIn}
-							className="w-full flex items-center gap-3 px-4 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+							className="w-full flex items-center gap-3 px-4 py-2.5 bg-[#337790] text-white rounded-lg hover:bg-[#337790] transition-colors"
 						>
 							<LogIn size={20} />
 							<span className="text-sm">Iniciar sesión</span>
@@ -89,7 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isSignedIn = false, onSignIn,
 					) : (
 						<button 
 							onClick={onSignOut}
-							className="w-full flex items-center gap-3 px-4 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+							className="w-full flex items-center gap-3 px-4 py-2.5 [#337790] text-white rounded-lg hover:bg-[#337790] transition-colors"
 						>
 							<LogOutIcon size={20} />
 							<span className="text-sm">Cerrar sesión</span>

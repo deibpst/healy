@@ -15,12 +15,6 @@ export default function NuevoPacientePage() {
             </p>
           </div>
 
-          <button
-            type="button"
-            className="text-sm font-medium text-slate-500 hover:text-slate-700"
-          >
-            Cancelar
-          </button>
         </div>
 
         {}
