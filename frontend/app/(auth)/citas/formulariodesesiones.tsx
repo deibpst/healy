@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 // ===============================================
 interface FormularioProps {
     numeroCita: string;
-    onGuardar?: () => void; // ⬅️ Nueva prop opcional
+    onGuardar?: () => void; 
 }
 
 interface EstadoFormularioLesion {
@@ -73,18 +73,16 @@ export default function FormularioRegistroLesion({ numeroCita, onGuardar }: Form
 
     // Lógica para añadir ejercicios a la lista de texto (PF17-V407)
     const manejarSeleccionEjercicio = (ejercicio: string) => {
-        // Añade el ejercicio al área de texto y salta una línea
         setDatosFormulario(prev => ({
             ...prev,
             asignacionEjercicios: prev.asignacionEjercicios 
                 ? `${prev.asignacionEjercicios}\n- ${ejercicio}` 
                 : `- ${ejercicio}`
         }));
-        setMostrarSelectorEjercicios(false); // Cierra el selector
+        setMostrarSelectorEjercicios(false); 
     };
 
 
-    // 3. Función genérica para manejar cambios
     const manejarCambio = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type, checked } = e.target;
         
