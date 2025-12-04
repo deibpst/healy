@@ -2,8 +2,34 @@ import { Calendar, MapPin, User, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Button } from "../../components/ui/button";
+import { GoogleCalendarService, AppointmentData } from "./GoogleAppointment";
+import { useEffect, useState } from "react";
 
 const NextAppointment = () => {
+  const [appointment, setAppointment] = useState<AppointmentData | null>(null);
+
+  useEffect(() => {
+    // Cargar datos de la cita
+    const appointmentData = GoogleCalendarService.getAppointmentData();
+    setAppointment(appointmentData);
+  }, []);
+
+  const handleAddToCalendar = () => {
+    if (appointment) {
+      GoogleCalendarService.addToCalendar(appointment);
+    }
+  };
+
+  if (!appointment) {
+    return (
+      <Card className="auth-card">
+        <CardContent className="flex items-center justify-center h-32">
+          <p>Cargando cita...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="auth-card border-primary bg-gradient-to-r from-primary/5 to-primary/10 border-primary/30">
       <CardHeader>
@@ -25,8 +51,8 @@ const NextAppointment = () => {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Fecha y Hora</p>
-              <p className="font-semibold text-foreground">Viernes, 15 Nov 2025</p>
-              <p className="text-sm text-muted-foreground">10:00 AM - 11:00 AM</p>
+              <p className="font-semibold text-foreground">Viernes, 15 Dic 2025</p>
+              <p className="text-sm text-muted-foreground">{appointment.startTime} - {appointment.endTime}</p>
             </div>
           </div>
 
@@ -36,8 +62,8 @@ const NextAppointment = () => {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Fisioterapeuta</p>
-              <p className="font-semibold text-foreground">Dr. María González</p>
-              <p className="text-sm text-muted-foreground">Especialista en Rehabilitación</p>
+              <p className="font-semibold text-foreground">{appointment.doctor}</p>
+              <p className="text-sm text-muted-foreground">{appointment.specialty}</p>
             </div>
           </div>
         </div>
@@ -54,8 +80,11 @@ const NextAppointment = () => {
         </div>
 
         <div className="flex gap-2 pt-2">
-          
-          <Button className="flex-1">
+          <Button 
+            className="flex-1"
+            onClick={handleAddToCalendar}
+          >
+            <Calendar className="h-4 w-4 mr-2" />
             Agregar a Calendario
           </Button>
         </div>
