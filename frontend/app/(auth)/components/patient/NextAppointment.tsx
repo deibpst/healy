@@ -54,9 +54,7 @@ const NextAppointment = () => {
         </div>
 
         <div className="flex gap-2 pt-2">
-          <Button variant="outline" className="flex-1">
-            Ver Detalles
-          </Button>
+          
           <Button className="flex-1">
             Agregar a Calendario
           </Button>
