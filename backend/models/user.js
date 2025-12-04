@@ -3,38 +3,53 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
 const User = sequelize.define('User', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
+  usuario_id: {
+    type: DataTypes.INTEGER,
     primaryKey: true,
+    autoIncrement: true,
+    field: 'usuario_id'
   },
-  name: {
-    type: DataTypes.STRING,
+  nombre: {
+    type: DataTypes.STRING(60),
     allowNull: false,
+    field: 'nombre'
+  },
+  apellidos: {
+    type: DataTypes.STRING(60),
+    allowNull: false,
+    field: 'apellidos'
   },
   email: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     allowNull: false,
     unique: true,
+    field: 'email'
   },
-  password: {
-    type: DataTypes.STRING,
+  telefono: {
+    type: DataTypes.STRING(15),
+    allowNull: true,
+    field: 'telefono'
+  },
+  rol: {
+    type: DataTypes.STRING(20),
     allowNull: false,
+    field: 'rol'
   },
-  phone: {
-    type: DataTypes.STRING,
+  contrasena: {
+    type: DataTypes.STRING(200),
     allowNull: false,
+    field: 'contrasena'
   },
-  role: {
-    type: DataTypes.ENUM('paciente', 'fisioterapeuta'),
+  fecha_registro: {
+    type: DataTypes.DATEONLY,
     allowNull: false,
-  },
-  cedula: {
-    type: DataTypes.STRING,
-    allowNull: true, // Puede ser nulo para pacientes
-  },
+    defaultValue: DataTypes.NOW,
+    field: 'fecha_registro'
+  }
 }, {
-  timestamps: true,
+  tableName: 'usuario',
+  timestamps: false,
+  freezeTableName: true
 });
 
 module.exports = User;

@@ -44,10 +44,32 @@ export default function RegisterForm() {
     setSuccessMsg('');
     if (!isValid) return;
 
-    console.log('Registro válido:', { ...form, role });
+    try {
+      const res = await fetch('http://localhost:5001/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: form.firstName,
+          apellidos: form.lastName,
+          email: form.email,
+          contrasena: form.password,
+          telefono: form.phone,
+          rol: role,
+          cedula: role === 'fisioterapeuta' ? form.codigo : null, // 🔑 envío cédula solo si es fisio
+        }),
+      });
 
-    setSuccessMsg('¡Registro exitoso!');
-    router.push('/login');
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.msg || 'Error en el registro');
+      }
+
+      setSuccessMsg('¡Registro exitoso!');
+      router.push('/login');
+    } catch (err: any) {
+      console.error('Error en el registro:', err.message);
+      setErrors({ general: err.message });
+    }
   };
 
   // lo que el usuario escribe (sin el 52)
@@ -94,76 +116,62 @@ export default function RegisterForm() {
           onChange={handleChange}
           className="w-full p-2 border border-gray-300 rounded-md"
         />
-        {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+        {errors.email && (
+          <p className="text-sm text-red-500">{errors.email}</p>
+        )}
       </div>
 
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <label className="font-medium text-gray-700">Contraseña</label>
-          <input
-            name="password"
-            type="password"
-            placeholder="******"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-          {errors.password && (
-            <p className="text-sm text-red-500">{errors.password}</p>
-          )}
-        </div>
-
-        <div className="flex-1">
-          <label className="font-medium text-gray-700">Confirmar</label>
-          <input
-            name="confirm"
-            type="password"
-            placeholder="******"
-            value={form.confirm}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-          {errors.confirm && (
-            <p className="text-sm text-red-500">{errors.confirm}</p>
-          )}
-        </div>
+      <div>
+        <label className="font-medium text-gray-700">Contraseña</label>
+        <input
+          type="password"
+          name="password"
+          placeholder="••••••••"
+          value={form.password}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+        {errors.password && (
+          <p className="text-sm text-red-500">{errors.password}</p>
+        )}
       </div>
 
-      {/* Teléfono con 52 fijo */}
+      <div>
+        <label className="font-medium text-gray-700">Confirmar contraseña</label>
+        <input
+          type="password"
+          name="confirm"
+          placeholder="••••••••"
+          value={form.confirm}
+          onChange={handleChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+        {errors.confirm && (
+          <p className="text-sm text-red-500">{errors.confirm}</p>
+        )}
+      </div>
+
       <div>
         <label className="font-medium text-gray-700">Teléfono</label>
-
-        <div className="flex gap-2">
-          {/* Prefijo fijo no editable */}
-          <input
-            value="52"
-            disabled
-            className="w-16 p-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
-          />
-
-          {/* Número editable de 10 dígitos */}
-          <input
-            name="phoneNumber"
-            placeholder="7561100133"
-            value={phoneNumberOnly}
-            onChange={handlePhoneNumberChange}
-            className="flex-1 p-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
-        <p className="text-xs text-gray-500 mt-1">(lada obligatoria de mexico)</p>
-
+        <input
+          name="phone"
+          placeholder="Tu número (10 dígitos)"
+          value={phoneNumberOnly}
+          onChange={handlePhoneNumberChange}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
         {errors.phone && (
           <p className="text-sm text-red-500">{errors.phone}</p>
         )}
       </div>
 
+      {/* 🔑 Campo extra solo para fisioterapeuta */}
       {role === 'fisioterapeuta' && (
         <div>
-          <label className="font-medium text-gray-700">Código</label>
+          <label className="font-medium text-gray-700">Cédula profesional</label>
           <input
             name="codigo"
-            placeholder="Código proporcionado por el encargado"
+            placeholder="Tu cédula"
             value={form.codigo}
             onChange={handleChange}
             className="w-full p-2 border border-gray-300 rounded-md"
@@ -174,24 +182,15 @@ export default function RegisterForm() {
         </div>
       )}
 
-      <button
-        type="submit"
-        className="w-full py-2 bg-[#337790] text-white rounded-md hover:bg-[#2b6478] transition"
-      >
-        Crear cuenta
+      <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md">
+        Registrarse
       </button>
 
-      {successMsg && (
-        <p className="text-sm text-green-600 text-center font-medium">
-          {successMsg}
-        </p>
-      )}
+      {successMsg && <p className="text-green-600">{successMsg}</p>}
+      {errors.general && <p className="text-red-600">{errors.general}</p>}
 
-      <p className="text-sm text-center text-gray-600 mt-4">
-        ¿Ya tienes una cuenta?{' '}
-        <Link href="/login" className="text-[#337790] hover:underline">
-          Inicia sesión
-        </Link>
+      <p className="text-sm">
+        ¿Ya tienes cuenta? <Link className="text-blue-600 underline" href="/login">Inicia sesión</Link>
       </p>
     </form>
   );
