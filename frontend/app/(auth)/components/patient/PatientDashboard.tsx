@@ -72,16 +72,22 @@ const PatientDashboard = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button 
+                            <Button 
                 variant="outline" 
                 size="sm" 
-                className="gap-2 border-gray-300 hover:text-white transition-colors shadow-md"
+                className="gap-2 border-gray-300 transition-colors shadow-md"
                 style={{ 
                   borderColor: '#2E748F', 
                   color: '#2E748F',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2E748F'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#2E748F';
+                  e.currentTarget.style.color = 'white'; 
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = '#2E748F'; 
+                }}
                 onClick={() => {
                   router.push('/editProfile');
                 }}
