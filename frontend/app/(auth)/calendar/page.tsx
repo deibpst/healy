@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
-import { googleCalendarService, GoogleCalendarEvent } from '@/app/services/googleCalendar';
 
 interface CalendarEvent {
   id: string;
@@ -17,12 +16,31 @@ interface CalendarEvent {
   endTime?: string;
 }
 
+// Interface más precisa para eventos de Google Calendar
+interface GoogleCalendarEvent {
+  id: string;
+  summary?: string;
+  description?: string;
+  start: {
+    dateTime?: string;
+    date?: string;
+  };
+  end: {
+    dateTime?: string;
+    date?: string;
+  };
+  // Agregar propiedades adicionales que pueda tener la respuesta
+  [key: string]: any; // Para aceptar propiedades adicionales
+}
+
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<'Day' | 'Week' | 'Month'>('Month');
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [gapiLoaded, setGapiLoaded] = useState<boolean>(false);
+  const [gisLoaded, setGisLoaded] = useState<boolean>(false);
 
   // Modal states
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -40,8 +58,13 @@ export default function Calendar() {
     { bg: 'bg-yellow-200', text: 'text-yellow-700', colorId: '6' },
   ];
 
+  // TUS CREDENCIALES REALES
+  const CLIENT_ID = '348687061868-00hvvf76imh0qmhcc7eov9qklhicpu1a.apps.googleusercontent.com';
+  const API_KEY = 'AIzaSyD2FZkoeASxpV1KPZn8PCiBcJvdaM8B0a8';
+  const SCOPES = 'https://www.googleapis.com/auth/calendar';
+
   useEffect(() => {
-    initGoogleCalendar();
+    loadGoogleScripts();
   }, []);
 
   useEffect(() => {
@@ -50,61 +73,170 @@ export default function Calendar() {
     }
   }, [currentDate, isSignedIn]);
 
-  const initGoogleCalendar = async () => {
+  const loadGoogleScripts = () => {
+    // Primero verificar si ya están cargadas las bibliotecas
+    if ((window as any).gapi && (window as any).google) {
+      setGapiLoaded(true);
+      setGisLoaded(true);
+      initializeGapiClient();
+      return;
+    }
+
+    // Cargar gapi
+    const gapiScript = document.createElement('script');
+    gapiScript.src = 'https://apis.google.com/js/api.js';
+    gapiScript.async = true;
+    gapiScript.defer = true;
+    gapiScript.onload = () => {
+      console.log('GAPI cargado');
+      setGapiLoaded(true);
+      // Ahora cargar gis
+      loadGisScript();
+    };
+    gapiScript.onerror = (error) => {
+      console.error('Error cargando GAPI:', error);
+    };
+    document.head.appendChild(gapiScript);
+  };
+
+  const loadGisScript = () => {
+    const gisScript = document.createElement('script');
+    gisScript.src = 'https://accounts.google.com/gsi/client';
+    gisScript.async = true;
+    gisScript.defer = true;
+    gisScript.onload = () => {
+      console.log('GIS cargado');
+      setGisLoaded(true);
+      initializeGapiClient();
+    };
+    gisScript.onerror = (error) => {
+      console.error('Error cargando GIS:', error);
+    };
+    document.head.appendChild(gisScript);
+  };
+
+  const initializeGapiClient = async () => {
     try {
-      await googleCalendarService.init();
-      const signedIn = googleCalendarService.isSignedIn();
+      await (window as any).gapi.load('client', async () => {
+        try {
+          await (window as any).gapi.client.init({
+            apiKey: API_KEY,
+            discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+          });
+          console.log('GAPI client inicializado');
+          checkAuthStatus();
+        } catch (error) {
+          console.error('Error inicializando gapi client:', error);
+          alert('Error al inicializar Google Calendar. Verifica tu API_KEY.');
+        }
+      });
+    } catch (error) {
+      console.error('Error cargando gapi client:', error);
+    }
+  };
+
+  const checkAuthStatus = () => {
+    if (!gapiLoaded) return;
+    
+    try {
+      const token = (window as any).gapi?.client?.getToken?.();
+      const signedIn = !!token;
       setIsSignedIn(signedIn);
     } catch (error) {
-      console.error('Error initializing Google Calendar:', error);
+      console.error('Error verificando estado de autenticación:', error);
+      setIsSignedIn(false);
     }
   };
 
   const handleSignIn = async () => {
     try {
-      console.log('handleSignIn: iniciando...');
-      await googleCalendarService.signIn();
-      console.log('handleSignIn: signIn() terminó sin lanzar error');
+      setIsLoading(true);
+      
+      // Verificar que las bibliotecas estén cargadas
+      if (!gapiLoaded || !gisLoaded) {
+        alert('Las bibliotecas de Google no se han cargado correctamente. Intenta recargar la página.');
+        setIsLoading(false);
+        return;
+      }
 
-      const signedIn = googleCalendarService.isSignedIn();
-      console.log('handleSignIn: isSignedIn() =', signedIn);
-
-      setIsSignedIn(signedIn);
-      if (signedIn) {
+      // Verificar si ya estamos autenticados
+      const existingToken = (window as any).gapi?.client?.getToken?.();
+      if (existingToken) {
+        setIsSignedIn(true);
+        setIsLoading(false);
         loadEvents();
-      }
-    } catch (error: unknown) {
-      console.error('Error signing in (handleSignIn catch):', error);
-
-      if (typeof error === 'object' && error !== null) {
-        const errObj = error as { error?: unknown; details?: unknown };
-
-        if (errObj.error !== undefined) {
-          console.log('🔍 error.error =', errObj.error);
-        }
-        if (errObj.details !== undefined) {
-          console.log('🔍 error.details =', errObj.details);
-        }
+        return;
       }
 
-      alert('Error al iniciar sesión con Google. Revisa la consola para más detalles.');
+      // Crear cliente de token OAuth
+      const tokenClient = (window as any).google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: (response: any) => {
+          if (response.error) {
+            console.error('Error de autenticación:', response);
+            let errorMsg = 'Error al autenticar con Google. ';
+            
+            if (response.error === 'popup_closed_by_user') {
+              errorMsg += 'La ventana fue cerrada antes de completar la autenticación.';
+            } else if (response.error === 'access_denied') {
+              errorMsg += 'Acceso denegado. Asegúrate de otorgar los permisos necesarios.';
+            } else {
+              errorMsg += `Código: ${response.error}`;
+            }
+            
+            alert(errorMsg);
+            setIsLoading(false);
+            return;
+          }
+          
+          // Guardar el token
+          (window as any).gapi.client.setToken(response);
+          setIsSignedIn(true);
+          setIsLoading(false);
+          alert('¡Autenticación exitosa! Ahora puedes usar Google Calendar.');
+          loadEvents();
+        },
+      });
+
+      tokenClient.requestAccessToken();
+    } catch (error: any) {
+      console.error('Error en autenticación:', error);
+      setIsLoading(false);
+      
+      if (error.message?.includes('popup')) {
+        alert('La ventana de autenticación fue cerrada. Intenta de nuevo.');
+      } else if (error.message?.includes('not ready')) {
+        alert('Google Calendar no está listo. Recarga la página.');
+      } else {
+        alert('Error inesperado al conectar con Google.');
+      }
     }
   };
 
   const handleSignOut = async () => {
     try {
-      await googleCalendarService.signOut();
+      const token = (window as any).gapi?.client?.getToken?.();
+      if (token) {
+        (window as any).google.accounts.oauth2.revoke(token.access_token, () => {
+          console.log('Token revocado');
+        });
+        (window as any).gapi.client.setToken(null);
+      }
       setIsSignedIn(false);
       setEvents([]);
+      alert('Sesión cerrada correctamente');
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('Error cerrando sesión:', error);
+      alert('Error al cerrar sesión');
     }
   };
 
   const loadEvents = async () => {
-    const signedIn = googleCalendarService.isSignedIn();
-    setIsSignedIn(signedIn);
-    if (!signedIn) return;
+    if (!isSignedIn || !gapiLoaded) {
+      console.log('No autenticado, omitiendo carga de eventos');
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -114,15 +246,25 @@ export default function Calendar() {
       const timeMin = new Date(year, month, 1).toISOString();
       const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
 
-      const googleEvents = await googleCalendarService.getEvents(timeMin, timeMax);
+      const response = await (window as any).gapi.client.calendar.events.list({
+        calendarId: 'primary',
+        timeMin: timeMin,
+        timeMax: timeMax,
+        showDeleted: false,
+        singleEvents: true,
+        maxResults: 100,
+        orderBy: 'startTime'
+      });
+
+      const googleEvents = response.result.items || [];
 
       const calendarEvents: CalendarEvent[] = googleEvents.map(
-        (event: GoogleCalendarEvent, idx: number) => {
-          const startDate = new Date(event.start.dateTime || event.start.date || '');
+        (event: any, idx: number) => {
+          const startDate = new Date(event.start?.dateTime || event.start?.date || Date.now());
           const randomColor = eventColors[idx % eventColors.length];
 
           return {
-            id: event.id,
+            id: event.id || `event-${idx}`,
             title: event.summary || 'Sin título',
             date: startDate.getDate(),
             month: startDate.getMonth(),
@@ -130,8 +272,8 @@ export default function Calendar() {
             color: randomColor.bg,
             textColor: randomColor.text,
             description: event.description,
-            startTime: event.start.dateTime,
-            endTime: event.end.dateTime,
+            startTime: event.start?.dateTime,
+            endTime: event.end?.dateTime,
           };
         }
       );
@@ -146,7 +288,7 @@ export default function Calendar() {
   };
 
   const handleDayClick = (day: number) => {
-    if (!googleCalendarService.isSignedIn()) {
+    if (!isSignedIn) {
       alert('Por favor inicia sesión con Google primero');
       return;
     }
@@ -167,11 +309,20 @@ export default function Calendar() {
       const startDateTime = new Date(year, month, selectedDay, 9, 0);
       const endDateTime = new Date(year, month, selectedDay, 10, 0);
 
-      await googleCalendarService.createEvent({
-        summary: eventTitle.trim(),
-        description: eventDescription.trim(),
-        start: startDateTime.toISOString(),
-        end: endDateTime.toISOString(),
+      await (window as any).gapi.client.calendar.events.insert({
+        calendarId: 'primary',
+        resource: {
+          summary: eventTitle.trim(),
+          description: eventDescription.trim(),
+          start: {
+            dateTime: startDateTime.toISOString(),
+            timeZone: 'America/Mexico_City'
+          },
+          end: {
+            dateTime: endDateTime.toISOString(),
+            timeZone: 'America/Mexico_City'
+          }
+        }
       });
 
       setEventTitle('');
@@ -196,9 +347,13 @@ export default function Calendar() {
     if (!eventTitle.trim() || !editingEvent) return;
 
     try {
-      await googleCalendarService.updateEvent(editingEvent, {
-        summary: eventTitle.trim(),
-        description: eventDescription.trim(),
+      await (window as any).gapi.client.calendar.events.update({
+        calendarId: 'primary',
+        eventId: editingEvent,
+        resource: {
+          summary: eventTitle.trim(),
+          description: eventDescription.trim(),
+        }
       });
 
       setEventTitle('');
@@ -216,7 +371,10 @@ export default function Calendar() {
     if (!confirm('¿Estás seguro de eliminar este evento?')) return;
 
     try {
-      await googleCalendarService.deleteEvent(eventId);
+      await (window as any).gapi.client.calendar.events.delete({
+        calendarId: 'primary',
+        eventId: eventId
+      });
       loadEvents();
     } catch (error) {
       console.error('Error deleting event:', error);
@@ -408,6 +566,24 @@ export default function Calendar() {
       {/* Contenido principal */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Calendario</h1>
+        <div>
+          {!isSignedIn ? (
+            <button
+              onClick={handleSignIn}
+              disabled={isLoading || !gapiLoaded || !gisLoaded}
+              className="px-6 py-2 bg-[#337790] text-white rounded-lg hover:bg-[#2a6175] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Conectando...' : 'Iniciar sesión con Google'}
+            </button>
+          ) : (
+            <button
+              onClick={handleSignOut}
+              className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            >
+              Cerrar sesión
+            </button>
+          )}
+        </div>
       </div>
 
       {isLoading && (
@@ -415,6 +591,20 @@ export default function Calendar() {
           Cargando eventos de Google Calendar...
         </div>
       )}
+
+      {!gapiLoaded || !gisLoaded ? (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <p className="text-yellow-800 text-center">
+            Cargando bibliotecas de Google... Esto puede tomar unos segundos.
+          </p>
+        </div>
+      ) : !isSignedIn ? (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <p className="text-blue-800 text-center">
+            Inicia sesión con Google para ver y gestionar tus eventos del calendario
+          </p>
+        </div>
+      ) : null}
 
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-6">

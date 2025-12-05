@@ -1,4 +1,4 @@
-// models/User.js
+// models/user.js
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 
@@ -45,6 +45,11 @@ const User = sequelize.define('User', {
     allowNull: false,
     defaultValue: DataTypes.NOW,
     field: 'fecha_registro'
+  },
+  google_refresh_token: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+    field: 'google_refresh_token'
   }
 }, {
   tableName: 'usuario',

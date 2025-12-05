@@ -24,7 +24,9 @@ app.use(cors({
 
 // Conectar a DB y Sincronizar modelos
 connectDB();
-sequelize.sync().then(() => {
+
+// Sincronizar con alter: true para agregar nuevas columnas sin perder datos
+sequelize.sync({ alter: true }).then(() => {
     console.log('📋 Modelos sincronizados con la DB.');
 }).catch(err => {
     console.error('❌ Error al sincronizar modelos:', err);
@@ -82,7 +84,7 @@ app.get('/', (req, res) => {
     res.send('Servidor Healy Backend funcionando!');
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
