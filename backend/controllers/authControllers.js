@@ -23,13 +23,13 @@ const generateToken = (id) => {
 // --- POST /api/auth/register ---
 exports.registerUser = async (req, res) => {
   try {
-    console.log('📩 REGISTER REQUEST RECIBIDA');
-    console.log('📦 Body recibido:', req.body);
+    console.log('REGISTER REQUEST RECIBIDA');
+    console.log('Body recibido:', req.body);
 
     const { nombre, apellidos, email, contrasena, telefono, rol } = req.body;
 
     if (!nombre || !apellidos || !email || !contrasena || !rol) {
-      console.log('❌ Faltan campos obligatorios');
+      console.log('Faltan campos obligatorios');
       return res.status(400).json({ 
         success: false,
         msg: 'Faltan campos obligatorios.' 
@@ -37,29 +37,29 @@ exports.registerUser = async (req, res) => {
     }
     
     if (rol !== 'paciente' && rol !== 'fisioterapeuta') {
-      console.log('❌ Rol inválido:', rol);
+      console.log('Rol inválido:', rol);
       return res.status(400).json({ 
         success: false,
         msg: 'Rol inválido. Solo se permiten "paciente" o "fisioterapeuta".' 
       });
     }
 
-    console.log('🔍 Verificando si el usuario ya existe:', email);
+    console.log('Verificando si el usuario ya existe:', email);
     const exists = await User.findOne({ where: { email } });
     
     if (exists) {
-      console.log('❌ Usuario ya existe con este correo');
+      console.log('Usuario ya existe con este correo');
       return res.status(400).json({ 
         success: false,
         msg: 'El correo electrónico ya está registrado. Por favor, usa otro.' 
       });
     }
 
-    console.log('🔐 Encriptando contraseña...');
+    console.log('Encriptando contraseña...');
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(contrasena, salt);
 
-    console.log('📝 Creando usuario en la base de datos...');
+    console.log('Creando usuario en la base de datos...');
     const user = await User.create({
       nombre,
       apellidos,
@@ -69,25 +69,24 @@ exports.registerUser = async (req, res) => {
       rol
     });
 
-    console.log('✅ Usuario creado exitosamente:', user.email);
+    console.log('Usuario creado exitosamente:', user.email);
     
     const token = generateToken(user.usuario_id);
     
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      msg: '🎉 ¡Registro exitoso! Tu cuenta ha sido creada.',
+      msg: 'Registro exitoso. Tu cuenta ha sido creada.',
       id: user.usuario_id,
       nombre: user.nombre,
       apellidos: user.apellidos,
       email: user.email,
       rol: user.rol,
       token: token,
-      redirectPath: '/login'
     });
     
   } catch (error) {
-    console.error('🔥 ERROR en el registro:', error);
-    res.status(500).json({ 
+    console.error('ERROR en el registro:', error);
+    return res.status(500).json({ 
       success: false,
       msg: 'Error interno del servidor al registrar usuario.',
       error: error.message
@@ -98,43 +97,43 @@ exports.registerUser = async (req, res) => {
 // --- POST /api/auth/login ---
 exports.loginUser = async (req, res) => {
   try {
-    console.log('📩 LOGIN REQUEST RECIBIDA');
-    console.log('📦 Body recibido:', req.body);
+    console.log('LOGIN REQUEST RECIBIDA');
+    console.log('Body recibido:', req.body);
 
     const { email, contrasena } = req.body;
 
     if (!email || !contrasena) {
-      console.log('❌ ERROR: Faltan campos obligatorios');
+      console.log('ERROR: Faltan campos obligatorios');
       return res.status(400).json({ 
         success: false,
-        msg: '📝 Por favor, ingresa tu correo y contraseña.' 
+        msg: 'Por favor, ingresa tu correo y contraseña.'  // SIN EMOJI
       });
     }
 
-    console.log('🔍 Buscando usuario con email:', email);
+    console.log('Buscando usuario con email:', email);
     const user = await User.findOne({ where: { email } });
     
     if (!user) {
-      console.log('❌ ERROR: Usuario no encontrado');
+      console.log('ERROR: Usuario no encontrado');
       return res.status(400).json({ 
         success: false,
-        msg: '🔍 Usuario no encontrado. Verifica tu correo electrónico.' 
+        msg: 'Usuario no encontrado. Verifica tu correo electrónico.'  // SIN EMOJI
       });
     }
 
-    console.log('✅ Usuario encontrado:', user.email);
-    console.log('🔑 Comparando contraseña...');
+    console.log('Usuario encontrado:', user.email);
+    console.log('Comparando contraseña...');
     const isMatch = await bcrypt.compare(contrasena, user.contrasena);
     
     if (!isMatch) {
-      console.log('❌ ERROR: Contraseña incorrecta');
+      console.log('ERROR: Contraseña incorrecta');
       return res.status(400).json({ 
         success: false,
-        msg: '🔒 Contraseña incorrecta. Por favor, intenta nuevamente.' 
+        msg: 'Contraseña incorrecta. Por favor, intenta nuevamente.'  // SIN EMOJI
       });
     }
 
-    console.log('✅ Contraseña correcta');
+    console.log('Contraseña correcta');
     
     let redirectPath;
     if (user.rol === 'paciente') {
@@ -145,12 +144,12 @@ exports.loginUser = async (req, res) => {
       redirectPath = '/dashboard';
     }
 
-    console.log('📝 Generando token para usuario ID:', user.usuario_id);
+    console.log('Generando token para usuario ID:', user.usuario_id);
     const token = generateToken(user.usuario_id);
     
     const responseData = {
       success: true,
-      msg: '✅ ¡Inicio de sesión exitoso! Redirigiendo...',
+      msg: 'Inicio de sesión exitoso. Redirigiendo...',  // SIN EMOJI
       id: user.usuario_id,
       nombre: user.nombre,
       apellidos: user.apellidos,
@@ -161,14 +160,14 @@ exports.loginUser = async (req, res) => {
       redirectPath
     };
 
-    console.log('📤 Enviando respuesta de login exitoso');
-    res.json(responseData);
+    console.log('Enviando respuesta de login exitoso');
+    return res.json(responseData);
 
   } catch (error) {
-    console.error('🔥 ERROR en el login:', error);
-    res.status(500).json({ 
+    console.error('ERROR en el login:', error);
+    return res.status(500).json({ 
       success: false,
-      msg: '❌ Error interno del servidor. Por favor, intenta más tarde.',
+      msg: 'Error interno del servidor. Por favor, intenta más tarde.',  // SIN EMOJI
       error: error.message
     });
   }
@@ -177,38 +176,38 @@ exports.loginUser = async (req, res) => {
 // --- GET /api/auth/me (Obtener perfil del usuario autenticado) ---
 exports.getProfile = async (req, res) => {
   try {
-    console.log('📩 GET PROFILE REQUEST RECIBIDA');
+    console.log('GET PROFILE REQUEST RECIBIDA');
     
     const token = req.headers.authorization?.split(' ')[1];
     
     if (!token) {
-      console.log('❌ ERROR: No hay token');
+      console.log('ERROR: No hay token');
       return res.status(401).json({ 
         success: false, 
-        msg: '🔒 Sesión expirada. Por favor, inicia sesión nuevamente.' 
+        msg: 'Sesión expirada. Por favor, inicia sesión nuevamente.'  // SIN EMOJI
       });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('✅ Token verificado, ID de usuario:', decoded.id);
+    console.log('Token verificado, ID de usuario:', decoded.id);
     
     const user = await User.findByPk(decoded.id, {
       attributes: { exclude: ['contrasena'] }
     });
     
     if (!user) {
-      console.log('❌ ERROR: Usuario no encontrado');
+      console.log('ERROR: Usuario no encontrado');
       return res.status(404).json({ 
         success: false, 
-        msg: '👤 Usuario no encontrado en el sistema.' 
+        msg: 'Usuario no encontrado en el sistema.'  // SIN EMOJI
       });
     }
     
-    console.log('✅ Perfil obtenido para:', user.email);
+    console.log('Perfil obtenido para:', user.email);
     
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      msg: '📋 Perfil cargado exitosamente.',
+      msg: 'Perfil cargado exitosamente.',  // SIN EMOJI
       user: {
         usuario_id: user.usuario_id,
         nombre: user.nombre,
@@ -221,25 +220,25 @@ exports.getProfile = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('🔥 ERROR al obtener perfil:', error);
+    console.error('ERROR al obtener perfil:', error);
     
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ 
         success: false, 
-        msg: '⚠️ Token de sesión inválido. Por favor, inicia sesión nuevamente.' 
+        msg: 'Token de sesión inválido. Por favor, inicia sesión nuevamente.'  // SIN EMOJI
       });
     }
     
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ 
         success: false, 
-        msg: '⏰ Sesión expirada. Por favor, inicia sesión nuevamente.' 
+        msg: 'Sesión expirada. Por favor, inicia sesión nuevamente.'  // SIN EMOJI
       });
     }
     
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false, 
-      msg: '❌ Error al cargar el perfil. Por favor, intenta más tarde.' 
+      msg: 'Error al cargar el perfil. Por favor, intenta más tarde.'  // SIN EMOJI
     });
   }
 };
@@ -247,42 +246,42 @@ exports.getProfile = async (req, res) => {
 // --- PUT /api/auth/update-profile (Actualizar perfil) ---
 exports.updateProfile = async (req, res) => {
   try {
-    console.log('📩 UPDATE PROFILE REQUEST RECIBIDA');
+    console.log('UPDATE PROFILE REQUEST RECIBIDA');
     
     const token = req.headers.authorization?.split(' ')[1];
     
     if (!token) {
-      console.log('❌ ERROR: No hay token');
+      console.log('ERROR: No hay token');
       return res.status(401).json({ 
         success: false, 
-        msg: '🔒 Sesión expirada. Por favor, inicia sesión nuevamente.' 
+        msg: 'Sesión expirada. Por favor, inicia sesión nuevamente.'  // SIN EMOJI
       });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const usuario_id = decoded.id;
-    console.log('✅ Token verificado, ID de usuario:', usuario_id);
+    console.log('Token verificado, ID de usuario:', usuario_id);
     
     const { email, telefono, contrasena } = req.body;
     
-    console.log('📊 Datos para actualizar:', { email, telefono, hasPassword: !!contrasena });
+    console.log('Datos para actualizar:', { email, telefono, hasPassword: !!contrasena });
     
     const user = await User.findByPk(usuario_id);
     if (!user) {
-      console.log('❌ ERROR: Usuario no encontrado');
+      console.log('ERROR: Usuario no encontrado');
       return res.status(404).json({ 
         success: false, 
-        msg: '👤 Usuario no encontrado en el sistema.' 
+        msg: 'Usuario no encontrado en el sistema.'  // SIN EMOJI
       });
     }
 
-    console.log('👤 Usuario encontrado:', user.email);
+    console.log('Usuario encontrado:', user.email);
     
     const updateData = {};
     const cambios = [];
     
     if (email && email !== user.email) {
-      console.log('📧 Cambiando email...');
+      console.log('Cambiando email...');
       
       const existingUser = await User.findOne({ 
         where: { 
@@ -292,10 +291,10 @@ exports.updateProfile = async (req, res) => {
       });
       
       if (existingUser) {
-        console.log('❌ ERROR: El email ya está en uso');
+        console.log('ERROR: El email ya está en uso');
         return res.status(400).json({ 
           success: false, 
-          msg: '📧 Este correo electrónico ya está en uso por otro usuario. Por favor, usa otro.' 
+          msg: 'Este correo electrónico ya está en uso por otro usuario. Por favor, usa otro.'  // SIN EMOJI
         });
       }
       updateData.email = email;
@@ -303,13 +302,13 @@ exports.updateProfile = async (req, res) => {
     }
     
     if (telefono !== undefined && telefono !== user.telefono) {
-      console.log('📞 Cambiando teléfono...');
+      console.log('Cambiando teléfono...');
       updateData.telefono = telefono;
       cambios.push('teléfono');
     }
     
     if (contrasena) {
-      console.log('🔑 Cambiando contraseña...');
+      console.log('Cambiando contraseña...');
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(contrasena, salt);
       updateData.contrasena = hashedPassword;
@@ -317,16 +316,16 @@ exports.updateProfile = async (req, res) => {
     }
 
     if (Object.keys(updateData).length > 0) {
-      console.log('📝 Actualizando usuario...');
+      console.log('Actualizando usuario...');
       await User.update(updateData, {
         where: { usuario_id }
       });
-      console.log('✅ Usuario actualizado');
+      console.log('Usuario actualizado');
     } else {
-      console.log('ℹ️ No hay cambios');
+      console.log('No hay cambios');
       return res.status(200).json({
         success: true,
-        msg: 'ℹ️ No se detectaron cambios para actualizar.',
+        msg: 'No se detectaron cambios para actualizar.',  // SIN EMOJI
         user: user
       });
     }
@@ -335,47 +334,47 @@ exports.updateProfile = async (req, res) => {
       attributes: { exclude: ['contrasena'] }
     });
 
-    console.log('🎉 Perfil actualizado exitosamente');
+    console.log('Perfil actualizado exitosamente');
     
     // Crear mensaje personalizado según los cambios
     let mensaje = '';
     if (cambios.length === 1) {
-      mensaje = `✅ ${cambios[0].charAt(0).toUpperCase() + cambios[0].slice(1)} actualizado exitosamente.`;
+      mensaje = `${cambios[0].charAt(0).toUpperCase() + cambios[0].slice(1)} actualizado exitosamente.`;
     } else if (cambios.length > 1) {
       const ultimo = cambios.pop();
-      mensaje = `✅ ${cambios.join(', ')} y ${ultimo} actualizados exitosamente.`;
+      mensaje = `${cambios.join(', ')} y ${ultimo} actualizados exitosamente.`;
     } else {
-      mensaje = '✅ Perfil actualizado exitosamente.';
+      mensaje = 'Perfil actualizado exitosamente.';
     }
     
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      msg: mensaje,
+      msg: mensaje,  // SIN EMOJI
       user: updatedUser,
       cambios: cambios
     });
 
   } catch (error) {
-    console.error('🔥 ERROR al actualizar perfil:', error);
-    console.error('🔥 Stack trace:', error.stack);
+    console.error('ERROR al actualizar perfil:', error);
+    console.error('Stack trace:', error.stack);
     
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ 
         success: false, 
-        msg: '⚠️ Token de sesión inválido. Por favor, inicia sesión nuevamente.' 
+        msg: 'Token de sesión inválido. Por favor, inicia sesión nuevamente.'  // SIN EMOJI
       });
     }
     
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ 
         success: false, 
-        msg: '⏰ Sesión expirada. Por favor, inicia sesión nuevamente.' 
+        msg: 'Sesión expirada. Por favor, inicia sesión nuevamente.'  // SIN EMOJI
       });
     }
     
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false, 
-      msg: '❌ Error al guardar los cambios. Por favor, intenta nuevamente.',
+      msg: 'Error al guardar los cambios. Por favor, intenta nuevamente.',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
@@ -384,15 +383,15 @@ exports.updateProfile = async (req, res) => {
 // --- GET /api/auth/check-token (Verificar token) ---
 exports.checkToken = async (req, res) => {
   try {
-    console.log('🔍 CHECK TOKEN REQUEST RECIBIDA');
+    console.log('CHECK TOKEN REQUEST RECIBIDA');
     
     const token = req.headers.authorization?.split(' ')[1];
     
     if (!token) {
-      console.log('❌ No hay token');
+      console.log('No hay token');
       return res.status(401).json({ 
         valid: false, 
-        msg: '🔒 No hay token de sesión.' 
+        msg: 'No hay token de sesión.'  // SIN EMOJI
       });
     }
 
@@ -402,18 +401,18 @@ exports.checkToken = async (req, res) => {
     });
     
     if (!user) {
-      console.log('❌ Usuario no encontrado');
+      console.log('Usuario no encontrado');
       return res.status(401).json({ 
         valid: false, 
-        msg: '👤 Usuario no encontrado.' 
+        msg: 'Usuario no encontrado.'  // SIN EMOJI
       });
     }
     
-    console.log('✅ Token válido para:', user.email);
+    console.log('Token válido para:', user.email);
     
-    res.status(200).json({
+    return res.status(200).json({
       valid: true,
-      msg: '✅ Sesión válida.',
+      msg: 'Sesión válida.',  // SIN EMOJI
       user: {
         id: user.usuario_id,
         nombre: user.nombre,
@@ -423,18 +422,18 @@ exports.checkToken = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Token inválido:', error.message);
+    console.error('Token inválido:', error.message);
     
     if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
       return res.status(401).json({ 
         valid: false, 
-        msg: '⚠️ Sesión inválida o expirada. Por favor, inicia sesión nuevamente.' 
+        msg: 'Sesión inválida o expirada. Por favor, inicia sesión nuevamente.'  // SIN EMOJI
       });
     }
     
-    res.status(500).json({ 
+    return res.status(500).json({ 
       valid: false, 
-      msg: '❌ Error al verificar la sesión.' 
+      msg: 'Error al verificar la sesión.'  // SIN EMOJI
     });
   }
 };
@@ -442,18 +441,18 @@ exports.checkToken = async (req, res) => {
 // --- GET /api/auth/logout (Cerrar sesión - frontend maneja) ---
 exports.logoutUser = async (req, res) => {
   try {
-    console.log('🚪 LOGOUT REQUEST RECIBIDA');
+    console.log('LOGOUT REQUEST RECIBIDA');
     
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      msg: '👋 ¡Sesión cerrada exitosamente! Vuelve pronto.'
+      msg: 'Sesión cerrada exitosamente. Vuelve pronto.'  // SIN EMOJI
     });
     
   } catch (error) {
-    console.error('🔥 ERROR al cerrar sesión:', error);
-    res.status(500).json({
+    console.error('ERROR al cerrar sesión:', error);
+    return res.status(500).json({
       success: false,
-      msg: '❌ Error al cerrar sesión. Por favor, intenta nuevamente.'
+      msg: 'Error al cerrar sesión. Por favor, intenta nuevamente.'  // SIN EMOJI
     });
   }
 };
