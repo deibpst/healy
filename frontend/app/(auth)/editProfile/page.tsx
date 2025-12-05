@@ -1,5 +1,6 @@
 'use client';
 
+import { validateEditProfile } from "@/lib/validations/validateEditProfile";
 import { useState } from "react";
 import { Activity, LogOut, User, Eye, EyeOff, Save } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
@@ -22,16 +23,38 @@ export default function EditProfile() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Errores de validación para los campos editables
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
+
+    // Limpiar error del campo cuando el usuario escribe
+    setErrors(prev => ({
+      ...prev,
+      [field]: ""
+    }));
   };
 
   const handleSaveChanges = async () => {
+    // Validar solo los campos editables
+    const { isValid, errors } = validateEditProfile({
+      email: formData.email,
+      telefono: formData.telefono,
+      password: formData.password,
+    });
+
+    if (!isValid) {
+      setErrors(errors);
+      return; // No continúa si hay errores
+    }
+
+    // Si todo está bien, limpiamos errores y seguimos como antes
+    setErrors({});
     setIsLoading(true);
-    // Aquí iría la lógica para guardar los cambios
     console.log('Guardando cambios:', formData);
     
     // Simular llamada API
@@ -153,6 +176,9 @@ export default function EditProfile() {
                 className="w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-blue-500 transition-colors"
                 style={{ borderColor: '#2E748F' }}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              )}
             </div>
 
             <div>
@@ -166,6 +192,9 @@ export default function EditProfile() {
                 className="w-full px-3 py-2 border-2 rounded-md focus:outline-none focus:border-blue-500 transition-colors"
                 style={{ borderColor: '#2E748F' }}
               />
+              {errors.telefono && (
+                <p className="text-red-500 text-sm mt-1">{errors.telefono}</p>
+              )}
             </div>
 
             <div>
@@ -194,9 +223,10 @@ export default function EditProfile() {
                   )}
                 </Button>
               </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+              )}
             </div>
-
-            
 
             {/* Botón de guardar */}
             <div className="flex justify-center pt-4">
