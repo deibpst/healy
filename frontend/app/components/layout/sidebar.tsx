@@ -87,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isSignedIn = false, onSignIn,
 							className="w-full flex items-center gap-3 px-4 py-2.5 bg-[#337790] text-white rounded-lg hover:bg-[#337790] transition-colors"
 						>
 							<LogIn size={20} />
-							<span className="text-sm">Iniciar sesión</span>
+							<span className="text-sm">Cerrar sesión</span>
 						</button>
 					) : (
 						<button 

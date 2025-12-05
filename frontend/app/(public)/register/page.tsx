@@ -8,7 +8,7 @@ export default function RegisterPage() {
         <img
           src="/img/logo_sin_fondo.png"
           alt="Healy"
-          className="w-60 absolute top-4 left-4 md:left-8"
+          className="w-40 absolute top-4 left-4 md:left-8"
         />
 
         {/* Bloque completo del formulario más abajo */}

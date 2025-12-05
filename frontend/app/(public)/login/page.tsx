@@ -8,7 +8,7 @@ export default function LoginPage() {
         <img
           src="/img/logo_sin_fondo.png"
           alt="Healy"
-          className="w-60 absolute top-4 left-4 md:left-8"
+          className="w-40 absolute top-4 left-4 md:left-8"
         />
         <h1 className="mt-10 text-3xl font-bold mb-2">¡Bienvenido de vuelta!</h1>
         <p className="text-gray-500 mb-8">Ingresa tus datos</p>
