@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 // 1. TIPADO DE PROPIEDADES Y ESTADO
 // ===============================================
 interface FormularioProps {
-    numeroCita: string;
     onGuardar?: () => void; 
 }
 
@@ -36,7 +35,7 @@ const ejerciciosDisponibles = ['Estiramiento de Cuádriceps', 'Fortalecimiento d
 // ===============================================
 // 2. COMPONENTE PRINCIPAL
 // ===============================================
-export default function FormularioRegistroLesion({ numeroCita, onGuardar }: FormularioProps) {
+export default function FormularioRegistroLesion({ onGuardar }: FormularioProps) {
     const router = useRouter();
 
     const [datosFormulario, setDatosFormulario] = useState<EstadoFormularioLesion>({
@@ -161,11 +160,6 @@ export default function FormularioRegistroLesion({ numeroCita, onGuardar }: Form
     return (
         <>
             <div className="max-w-xl mx-auto p-8 bg-white shadow-xl">
-                
-                {/* Encabezado Dinámico (PF14-V404) */}
-                <h1 className="text-xl font-light text-gray-500">
-                    Cita {numeroCita} 
-                </h1>
                 
                 <form onSubmit={manejarEnvio} className="space-y-8">
                     
@@ -300,7 +294,7 @@ export default function FormularioRegistroLesion({ numeroCita, onGuardar }: Form
                     <div className="space-y-6 pt-4 border-t border-gray-200">
                         <h2 className="text-2xl font-bold text-gray-800">Estado Actual del Paciente</h2>
 
-                        {/* CHECKBOXES (PF15-V405) */}
+                        {/* CHECKBOXES */}
                         <div className="space-y-3">
                             {[
                                 { label: 'Adormecimiento, hormigueo o debilidad reciente', name: 'adormecimientoDebilidad' },
